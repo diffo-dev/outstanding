@@ -90,7 +90,7 @@ defmodule Outstand do
     {actual_type, []} = Code.eval_quoted(quoted_actual_type, [], __CALLER__)
 
     type =
-      [Outstanding, Type, expected_type, To, actual_type]
+      [Outstanding, Type, expected_type, And, actual_type]
       |> Module.concat()
 
     quote do
@@ -258,16 +258,16 @@ defmodule Outstand do
   defp new(expected, actual) do
     ea_type =
       try do
-        [Outstanding, Type, Typable.type_of(expected), To, Typable.type_of(actual)]
+        [Outstanding, Type, Typable.type_of(expected), And, Typable.type_of(actual)]
         |> Module.safe_concat()
-        #|> IO.inspect(label: "new")
       rescue
         ArgumentError ->
-          [Outstanding, Type, Any, To, Any]
+          [Outstanding, Type, Any, And, Any]
           |> Module.safe_concat()
       end
 
     %{__struct__: ea_type, expected: expected, actual: actual}
+    # |> IO.inspect(label: "new")
   end
 
   @doc """

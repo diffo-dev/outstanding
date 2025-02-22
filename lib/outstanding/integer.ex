@@ -6,3 +6,12 @@ defoutstanding expected :: Integer, actual :: Integer do
     _ -> expected
   end
 end
+
+# allow an integer to be resolved by an equivalent float
+defoutstanding expected :: Integer, actual :: Float do
+  if (expected == actual) do
+    nil
+  else
+    expected
+  end
+end
