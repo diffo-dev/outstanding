@@ -7,7 +7,7 @@ defmodule Outstand do
   @type actual :: term
 
   @doc """
-  Enables infix `---`, `<<<` shortcuts, `defoutstanding`,
+  Enables infix `---`, `>>>` shortcuts, `defoutstanding`,
   `gen_nothing_outstanding_test`, `gen_something_outstanding_test` `gen_result_outstanding_test` macro
   """
   defmacro __using__(_) do
@@ -17,7 +17,7 @@ defmodule Outstand do
       import Outstand,
         only: [
           ---: 2,
-          <<<: 2,
+          >>>: 2,
           defoutstanding: 3,
           gen_nothing_outstanding_test: 3,
           gen_something_outstanding_test: 3,
@@ -118,7 +118,7 @@ defmodule Outstand do
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual == nil
         #assert outstanding(uq_expected, uq_actual) == nil
-        #refute uq_expected <<< uq_actual
+        #refute uq_expected >>> uq_actual
         #refute outstanding?(uq_expected, uq_actual)
       end
     end
@@ -131,7 +131,7 @@ defmodule Outstand do
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual != nil
         #assert outstanding(uq_expected, uq_actual) != nil
-        #assert uq_expected <<< uq_actual
+        #assert uq_expected >>> uq_actual
         #assert outstanding?(uq_expected, uq_actual)
       end
     end
@@ -145,7 +145,7 @@ defmodule Outstand do
         uq_outstanding = unquote(outstanding)
         assert uq_expected --- uq_actual == uq_outstanding
         #assert outstanding(uq_expected, uq_actual) == uq_outstanding
-        #assert uq_expected <<< uq_actual == outstanding?(uq_outstanding)
+        #assert uq_expected >>> uq_actual == outstanding?(uq_outstanding)
         #assert outstanding?(uq_expected, uq_actual) == outstanding?(uq_outstanding)
       end
     end
@@ -173,20 +173,20 @@ defmodule Outstand do
   end
 
   @doc """
-  Infix shortcut <<< for `Outstand.outstanding?/2`
+  Infix shortcut >>> for `Outstand.outstanding?/2`
 
   ## Examples
 
   ```
   iex> use Outstand
   Outstand
-  iex> 1 <<< 1
+  iex> 1 >>> 1
   false
-  iex> 1 <<< :hello
+  iex> 1 >>> :hello
   true
   ```
   """
-  defmacro expected <<< actual do
+  defmacro expected >>> actual do
     quote do
       unquote(expected)
       |> Outstand.outstanding?(unquote(actual))

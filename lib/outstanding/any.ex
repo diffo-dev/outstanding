@@ -11,7 +11,7 @@ defoutstanding expected :: Any, actual :: Any do
       |> Map.from_struct()
       |> Outstand.outstanding(Map.from_struct(actual))
     {_, _} ->
-      expected #TODO something here, but must avoid recursive call to Any
-      #|> Outstand.outstanding(actual)
+      # not an exact match so default to outstanding
+      expected
   end
 end
