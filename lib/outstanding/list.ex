@@ -1,13 +1,13 @@
 use Outstand
 
 defoutstanding expected :: List, actual :: List do
-  # uses map set, do determine difference,
-  # ideally would call outstanding on each item in list, but needs to identify key
-  # tuples would be good here, first item would be key
-  ms_expected = MapSet.new(expected)
-  ms_actual = MapSet.new(actual)
-  ms_difference = MapSet.difference(ms_expected, ms_actual)
-  expected
-  |> Enum.filter(&MapSet.member?(ms_difference, &1))
-  |> Outstand.suppress()
+  if Enum.count(expected) == Enum.count(actual) do
+    {outstanding, _} =
+      Enum.zip(expected, actual)
+      |> Enum.filter(&Outstand.outstanding(elem(&1, 0), elem(&1, 1)))
+      |> Enum.unzip()
+    Outstand.suppress(outstanding)
+  else
+    expected
+  end
 end
