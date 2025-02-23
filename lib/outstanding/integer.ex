@@ -15,3 +15,12 @@ defoutstanding expected :: Integer, actual :: Float do
     expected
   end
 end
+
+# allow an integer to be resolved by a bounding range
+defoutstanding expected :: Integer, actual :: Range do
+  if (expected in actual) do
+    nil
+  else
+    expected
+  end
+end
