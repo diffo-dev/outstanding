@@ -9,8 +9,9 @@ end
 
 # allow an float to be resolved by an equivalent integer
 defoutstanding expected :: Float, actual :: Integer do
-  case actual do
-    ^expected -> nil
-    _ -> expected
+  if (expected == actual) do
+    nil
+  else
+    expected
   end
 end
