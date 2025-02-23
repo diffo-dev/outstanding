@@ -256,8 +256,8 @@ defmodule Outstand do
   end
 
   defp new(expected, actual) do
-    #IO.inspect(Typable.type_of(expected), label: "new type_of expected")
-    #IO.inspect(Typable.type_of(actual), label: "new type_of actual")
+    IO.inspect(Typable.type_of(expected), label: "new type_of expected")
+    IO.inspect(Typable.type_of(actual), label: "new type_of actual")
     ea_type =
       try do
         [Outstanding, Type, Typable.type_of(expected), And, Typable.type_of(actual)]
@@ -269,7 +269,7 @@ defmodule Outstand do
       end
 
     %{__struct__: ea_type, expected: expected, actual: actual}
-    #|> IO.inspect(label: "new")
+    |> IO.inspect(label: "new")
   end
 
   @doc """
