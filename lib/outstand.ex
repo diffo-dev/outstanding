@@ -259,7 +259,7 @@ defmodule Outstand do
 
     ea_type =
       try do
-        [Outstanding, Type, Typable.type_of(expected), And, Typable.type_of(actual)]
+        [Outstanding, Type, Outstand.type_of(expected), And, Outstand.type_of(actual)]
         |> Module.safe_concat()
       rescue
         ArgumentError ->
@@ -713,6 +713,62 @@ defmodule Outstand do
         end
       _ ->
         :non_empty_map_set
+    end
+  end
+
+  @doc """
+  Types the argument, similar to Typable
+
+  ## Examples
+  ```
+  iex> Outstand.type_of(nil)
+  Atom
+  iex> Outstand.type_of(:a)
+  Atom
+  iex> Outstand.type_of(true)
+  Boolean
+  iex> Outstand.type_of("a")
+  BitString
+  iex> Outstand.type_of(1.1)
+  Float
+  iex> Outstand.type_of(&Outstand.any_atom/1)
+  Function
+  iex> Outstand.type_of(1)
+  Integer
+  iex> Outstand.type_of([:a])
+  List
+  iex> Outstand.type_of(%{a: :a})
+  Map
+  iex> Outstand.type_of(MapSet.new([:a]))
+  MapSet
+  iex> Outstand.type_of(0..25//5)
+  Range
+  iex> Outstand.type_of({:a, :b, :c})
+  Tuple
+  iex> Outstand.type_of(~D[2025-02-25])
+  Date
+  ```
+  """
+
+  def type_of(term) do
+    case term do
+      _first.._last//_step  -> Range
+      %MapSet{}             -> MapSet
+      %_{}                  -> term.__struct__
+
+      _ ->
+        cond do
+          is_boolean(term)   -> Boolean
+          is_atom(term)      -> Atom
+          is_bitstring(term) -> BitString
+          is_float(term)     -> Float
+          is_function(term)  -> Function
+          is_integer(term)   -> Integer
+          is_list(term)      -> List
+          is_map(term)       -> Map
+          is_tuple(term)     -> Tuple
+          true               -> Any
+        end
     end
   end
 end
