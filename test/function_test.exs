@@ -23,6 +23,21 @@ defmodule Outstanding.FunctionTest do
   gen_nothing_outstanding_test("any_integer realized", &Outstand.any_integer/1, 1)
   gen_result_outstanding_test("any_integer value result", &Outstand.any_integer/1, 1.1, :any_integer)
 
+  gen_something_outstanding_test("any_list value outstanding", &Outstand.any_list/1, {:a, :b, :c})
+  gen_nothing_outstanding_test("any_list realized", &Outstand.any_list/1, [:a])
+  gen_nothing_outstanding_test("any_list empty realized", &Outstand.any_list/1, [])
+  gen_result_outstanding_test("any_list value result", &Outstand.any_list/1, {:a, :b, :c}, :any_list)
+
+  gen_something_outstanding_test("any_map value outstanding", &Outstand.any_map/1, [:a])
+  gen_nothing_outstanding_test("any_map realized", &Outstand.any_map/1, %{a: :a})
+  gen_nothing_outstanding_test("any_map empty realized", &Outstand.any_map/1, %{})
+  gen_result_outstanding_test("any_map value result", &Outstand.any_map/1, [:a], :any_map)
+
+  gen_something_outstanding_test("any_map_set value outstanding", &Outstand.any_map_set/1, [:a])
+  gen_nothing_outstanding_test("any_map_set realized", &Outstand.any_map_set/1, MapSet.new([:a]))
+  gen_nothing_outstanding_test("any_map_set empty realized", &Outstand.any_map_set/1, MapSet.new())
+  gen_result_outstanding_test("any_map_set value result", &Outstand.any_map_set/1, [:a], :any_map_set)
+
   gen_something_outstanding_test("any_number value outstanding", &Outstand.any_number/1, "10")
   gen_nothing_outstanding_test("any_number integer realized", &Outstand.any_number/1, 10)
   gen_nothing_outstanding_test("any_number float realized", &Outstand.any_number/1, 10.1)
@@ -36,33 +51,31 @@ defmodule Outstanding.FunctionTest do
   gen_nothing_outstanding_test("any_tuple realized", &Outstand.any_tuple/1, {:a, :b, :c})
   gen_result_outstanding_test("any_tuple value result", &Outstand.any_tuple/1, [:a], :any_tuple)
 
-  gen_something_outstanding_test("any_list value outstanding", &Outstand.any_list/1, {:a, :b, :c})
-  gen_nothing_outstanding_test("any_list realized", &Outstand.any_list/1, [:a])
-  gen_nothing_outstanding_test("any_list empty realized", &Outstand.any_list/1, [])
-  gen_result_outstanding_test("any_list value result", &Outstand.any_list/1, {:a, :b, :c}, :any_list)
-
   gen_something_outstanding_test("empty_list value outstanding", &Outstand.empty_list/1, [:a])
   gen_nothing_outstanding_test("empty_list realized", &Outstand.empty_list/1, [])
   gen_result_outstanding_test("empty_list value result", &Outstand.empty_list/1, [:a], :empty_list)
-
-  gen_something_outstanding_test("any_map value outstanding", &Outstand.any_map/1, [:a])
-  gen_nothing_outstanding_test("any_map realized", &Outstand.any_map/1, %{a: :a})
-  gen_nothing_outstanding_test("any_map empty realized", &Outstand.any_map/1, %{})
-  gen_result_outstanding_test("any_map value result", &Outstand.any_map/1, [:a], :any_map)
-
-  gen_something_outstanding_test("non_empty_list value outstanding", &Outstand.non_empty_list/1, [])
-  gen_nothing_outstanding_test("non_empty_list realized", &Outstand.non_empty_list/1, [:a])
-  gen_result_outstanding_test("non_empty_list value result", &Outstand.non_empty_list/1, [], :non_empty_list)
 
   gen_something_outstanding_test("empty_map value outstanding", &Outstand.empty_map/1, %{a: :a})
   gen_nothing_outstanding_test("empty_map realized", &Outstand.empty_map/1, %{})
   gen_result_outstanding_test("empty_map value result", &Outstand.empty_map/1, %{a: :a}, :empty_map)
 
-  gen_something_outstanding_test("non_empty_map value outstanding", &Outstand.non_empty_map/1, %{})
-  gen_nothing_outstanding_test("non_empty_map realized", &Outstand.non_empty_map/1, %{a: :a})
-  gen_result_outstanding_test("non_empty_map value result", &Outstand.non_empty_map/1, %{}, :non_empty_map)
+  gen_something_outstanding_test("empty_map_set value outstanding", &Outstand.empty_map_set/1, MapSet.new([:a]))
+  gen_nothing_outstanding_test("empty_map_set realized", &Outstand.empty_map_set/1, MapSet.new())
+  gen_result_outstanding_test("empty_map_set value result", &Outstand.empty_map_set/1, MapSet.new([:a]), :empty_map_set)
 
   gen_something_outstanding_test("explicit_nil value outstanding", &Outstand.explicit_nil/1, true)
   gen_nothing_outstanding_test("explicit_nil realized", &Outstand.explicit_nil/1, nil)
   gen_result_outstanding_test("explicit_nil value result", &Outstand.explicit_nil/1, true, :explicit_nil)
+
+  gen_something_outstanding_test("non_empty_list value outstanding", &Outstand.non_empty_map/1, [])
+  gen_nothing_outstanding_test("non_empty_list realized", &Outstand.non_empty_list/1, [:a])
+  gen_result_outstanding_test("non_empty_list value result", &Outstand.non_empty_list/1, [], :non_empty_list)
+
+  gen_something_outstanding_test("non_empty_map value outstanding", &Outstand.non_empty_map/1, %{})
+  gen_nothing_outstanding_test("non_empty_map realized", &Outstand.non_empty_map/1, %{a: :a})
+  gen_result_outstanding_test("non_empty_map value result", &Outstand.non_empty_map/1, %{}, :non_empty_map)
+
+  gen_something_outstanding_test("non_empty_map_set value outstanding", &Outstand.non_empty_map_set/1, MapSet.new())
+  gen_nothing_outstanding_test("non_empty_map_set realized", &Outstand.non_empty_map_set/1, MapSet.new([:a]))
+  gen_result_outstanding_test("non_empty_map_set value result", &Outstand.non_empty_map_set/1, MapSet.new(), :non_empty_map_set)
 end

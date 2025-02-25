@@ -417,6 +417,77 @@ defmodule Outstand do
   end
 
   @doc """
+  Function which expects any list, including []
+
+  ## Examples
+  ```
+  iex> Outstand.any_list([:a])
+  nil
+  iex> Outstand.any_list([])
+  nil
+  iex> Outstand.any_list({:a, :b, :c})
+  :any_list
+  iex> Outstand.any_list(nil)
+  :any_list
+  ```
+  """
+  @spec any_list(any()) :: :any_list | nil
+  def any_list(actual) do
+    if is_list(actual) do
+      nil
+    else
+      :any_list
+    end
+  end
+
+  @doc """
+  Function which expects any map
+
+  ## Examples
+  ```
+  iex> Outstand.any_map(%{a: :a})
+  nil
+  iex> Outstand.any_map([:a])
+  :any_map
+  iex> Outstand.any_map(nil)
+  :any_map
+  ```
+  """
+  @spec any_map(any()) :: :any_map | nil
+  def any_map(actual) do
+    if is_map(actual) do
+      nil
+    else
+      :any_map
+    end
+  end
+
+  @doc """
+  Function which expects any map set
+
+  ## Examples
+  ```
+  iex> Outstand.any_map_set(MapSet.new())
+  nil
+  iex> Outstand.any_map_set(MapSet.new([:a]))
+  nil
+  iex> Outstand.any_map_set([:a])
+  :any_map_set
+  iex> Outstand.any_map_set(nil)
+  :any_map_set
+  ```
+  """
+  @spec any_map_set(any()) :: :any_map_set | nil
+  def any_map_set(actual) do
+    case actual do
+      %MapSet{} ->
+        nil
+      _ ->
+        :any_map_set
+    end
+  end
+
+  @doc """
   Function which expects any number
 
   ## Examples
@@ -484,30 +555,6 @@ defmodule Outstand do
   end
 
   @doc """
-  Function which expects any list, including []
-
-  ## Examples
-  ```
-  iex> Outstand.any_list([:a])
-  nil
-  iex> Outstand.any_list([])
-  nil
-  iex> Outstand.any_list({:a, :b, :c})
-  :any_list
-  iex> Outstand.any_list(nil)
-  :any_list
-  ```
-  """
-  @spec any_list(any()) :: :any_list | nil
-  def any_list(actual) do
-    if is_list(actual) do
-      nil
-    else
-      :any_list
-    end
-  end
-
-  @doc """
   Function which expects empty list
 
   ## Examples
@@ -526,50 +573,6 @@ defmodule Outstand do
       nil
     else
       :empty_list
-    end
-  end
-
-  @doc """
-  Function which expects non empty list
-
-  ## Examples
-  ```
-  iex> Outstand.non_empty_list([:a])
-  nil
-  iex> Outstand.non_empty_list([])
-  :non_empty_list
-  iex> Outstand.non_empty_list(nil)
-  :non_empty_list
-  ```
-  """
-  @spec non_empty_list(any()) :: :non_empty_list | nil
-  def non_empty_list(actual) do
-    if is_list(actual) && !Enum.empty?(actual) do
-      nil
-    else
-      :non_empty_list
-    end
-  end
-
-  @doc """
-  Function which expects any map
-
-  ## Examples
-  ```
-  iex> Outstand.any_map(%{a: :a})
-  nil
-  iex> Outstand.any_map([:a])
-  :any_map
-  iex> Outstand.any_map(nil)
-  :any_map
-  ```
-  """
-  @spec any_map(any()) :: :any_map | nil
-  def any_map(actual) do
-    if is_map(actual) do
-      nil
-    else
-      :any_map
     end
   end
 
@@ -596,6 +599,75 @@ defmodule Outstand do
   end
 
   @doc """
+  Function which expects empty map set
+
+  ## Examples
+  ```
+  iex> Outstand.empty_map_set(MapSet.new())
+  nil
+  iex> Outstand.empty_map_set(MapSet.new([:a]))
+  :empty_map_set
+  iex> Outstand.empty_map_set(nil)
+  :empty_map_set
+  ```
+  """
+  @spec empty_map_set(any()) :: :empty_map_set | nil
+  def empty_map_set(actual) do
+    case actual do
+      %MapSet{} ->
+        if Enum.empty?(actual) do
+          nil
+        else
+          :empty_map_set
+        end
+      _ ->
+        :empty_map_set
+    end
+  end
+
+  @doc """
+  Function which expects explicit nil
+
+  ## Examples
+  ```
+  iex> Outstand.explicit_nil(nil)
+  nil
+  iex> Outstand.explicit_nil(:a)
+  :explicit_nil
+  ```
+  """
+  @spec explicit_nil(any()) :: :explicit_nil | nil
+  def explicit_nil(actual) do
+    if actual == nil do
+      nil
+    else
+      :explicit_nil
+    end
+  end
+
+  @doc """
+  Function which expects non empty list
+
+  ## Examples
+  ```
+  iex> Outstand.non_empty_list([:a])
+  nil
+  iex> Outstand.non_empty_list([])
+  :non_empty_list
+  iex> Outstand.non_empty_list(nil)
+  :non_empty_list
+  ```
+  """
+  @spec non_empty_list(any()) :: :non_empty_list | nil
+  def non_empty_list(actual) do
+    if is_list(actual) && !Enum.empty?(actual) do
+      nil
+    else
+      :non_empty_list
+    end
+  end
+
+  @doc """
   Function which expects non empty map
 
   ## Examples
@@ -618,22 +690,29 @@ defmodule Outstand do
   end
 
   @doc """
-  Function which expects explicit nil
+  Function which expects non empty map set
 
   ## Examples
   ```
-  iex> Outstand.explicit_nil(nil)
+  iex> Outstand.non_empty_map_set(MapSet.new([:a]))
   nil
-  iex> Outstand.explicit_nil(:a)
-  :explicit_nil
+  iex> Outstand.non_empty_map_set(MapSet.new())
+  :non_empty_map_set
+  iex> Outstand.non_empty_map_set(nil)
+  :non_empty_map_set
   ```
   """
-  @spec explicit_nil(any()) :: :explicit_nil | nil
-  def explicit_nil(actual) do
-    if actual == nil do
-      nil
-    else
-      :explicit_nil
+  @spec non_empty_map_set(any()) :: :non_empty_map_set | nil
+  def non_empty_map_set(actual) do
+    case actual do
+      %MapSet{} ->
+        if !Enum.empty?(actual) do
+          nil
+        else
+          :non_empty_map_set
+        end
+      _ ->
+        :non_empty_map_set
     end
   end
 end

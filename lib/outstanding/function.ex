@@ -28,6 +28,10 @@ defoutstanding expected :: Function, actual :: Map do
   expected.(actual)
 end
 
+defoutstanding expected :: Function, actual :: MapSet do
+  expected.(actual)
+end
+
 defoutstanding expected :: Function, actual :: Range do
   expected.(actual)
 end
