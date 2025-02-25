@@ -373,6 +373,29 @@ defmodule Outstand do
   end
 
   @doc """
+  Function which expects any date time
+
+  ## Examples
+  ```
+  iex> Outstand.any_date_time(~U[2025-02-25 11:59:00.00Z])
+  nil
+  iex> Outstand.any_date_time("2025-02-25")
+  :any_date_time
+  iex> Outstand.any_date_time(nil)
+  :any_date_time
+  ```
+  """
+  @spec any_date_time(any()) :: :any_date_time | nil
+  def any_date_time(actual) do
+    case actual do
+      %DateTime{} ->
+        nil
+      _ ->
+        :any_date_time
+    end
+  end
+
+  @doc """
   Function which expects any float
 
   ## Examples
@@ -554,6 +577,37 @@ defmodule Outstand do
     end
   end
 
+   @doc """
+  Function which expects current date time (+/- 1 min from now)
+
+  ## Examples
+  ```
+  iex> now = DateTime.now!("Etc/UTC")
+  iex> Outstand.current_date_time(now)
+  nil
+  iex> Outstand.current_date_time(now |> DateTime.add(2, :minute))
+  :current_date_time
+  iex> Outstand.current_date_time(now |> DateTime.add(-2, :minute))
+  :current_date_time
+  iex> Outstand.current_date_time(nil)
+  :current_date_time
+  ```
+  """
+  @spec current_date_time(any()) :: :currente_date_time | nil
+  def current_date_time(actual) do
+    case actual do
+      %DateTime{} ->
+        if DateTime.after?(actual, DateTime.now!("Etc/UTC") |> DateTime.add(-1, :minute)) &&
+          DateTime.before?(actual, DateTime.now!("Etc/UTC") |> DateTime.add(1, :minute)) do
+          nil
+        else
+          :current_date_time
+        end
+      _ ->
+        :current_date_time
+    end
+  end
+
   @doc """
   Function which expects empty list
 
@@ -646,6 +700,33 @@ defmodule Outstand do
   end
 
   @doc """
+  Function which expects future date time
+
+  ## Examples
+  ```
+  iex> Outstand.future_date_time(~U[2102-02-25 11:59:00.00Z])
+  nil
+  iex> Outstand.future_date_time(~U[2002-02-25 11:59:00.00Z])
+  :future_date_time
+  iex> Outstand.future_date_time(nil)
+  :future_date_time
+  ```
+  """
+  @spec future_date_time(any()) :: :future_date_time | nil
+  def future_date_time(actual) do
+    case actual do
+      %DateTime{} ->
+        if DateTime.after?(actual, DateTime.now!("Etc/UTC")) do
+          nil
+        else
+          :future_date_time
+        end
+      _ ->
+        :future_date_time
+    end
+  end
+
+  @doc """
   Function which expects non empty list
 
   ## Examples
@@ -713,6 +794,33 @@ defmodule Outstand do
         end
       _ ->
         :non_empty_map_set
+    end
+  end
+
+  @doc """
+  Function which expects past date time
+
+  ## Examples
+  ```
+  iex> Outstand.past_date_time(~U[2002-02-25 11:59:00.00Z])
+  nil
+  iex> Outstand.past_date_time(~U[2102-02-25 11:59:00.00Z])
+  :past_date_time
+  iex> Outstand.past_date_time(nil)
+  :past_date_time
+  ```
+  """
+  @spec past_date_time(any()) :: :past_date_time | nil
+  def past_date_time(actual) do
+    case actual do
+      %DateTime{} ->
+        if DateTime.before?(actual, DateTime.now!("Etc/UTC")) do
+          nil
+        else
+          :past_date_time
+        end
+      _ ->
+        :past_date_time
     end
   end
 

@@ -15,6 +15,10 @@ defmodule Outstanding.FunctionTest do
   gen_nothing_outstanding_test("any_boolean realized", &Outstand.any_boolean/1, true)
   gen_result_outstanding_test("any_boolean value result", &Outstand.any_boolean/1, nil, :any_boolean)
 
+  gen_something_outstanding_test("any_date_time value outstanding", &Outstand.any_date_time/1, "2025-02-25")
+  gen_nothing_outstanding_test("any_date_time realized", &Outstand.any_date_time/1, ~U[2025-02-25 11:59:00.00Z])
+  gen_result_outstanding_test("any_date_time value result", &Outstand.any_date_time/1, "2025-02-25", :any_date_time)
+
   gen_something_outstanding_test("any_float value outstanding", &Outstand.any_float/1, 1)
   gen_nothing_outstanding_test("any_float realized", &Outstand.any_float/1, 1.1)
   gen_result_outstanding_test("any_float value result", &Outstand.any_float/1, 1, :any_float)
@@ -51,6 +55,10 @@ defmodule Outstanding.FunctionTest do
   gen_nothing_outstanding_test("any_tuple realized", &Outstand.any_tuple/1, {:a, :b, :c})
   gen_result_outstanding_test("any_tuple value result", &Outstand.any_tuple/1, [:a], :any_tuple)
 
+  gen_something_outstanding_test("current_date_time value outstanding", &Outstand.current_date_time/1, ~U[2002-02-25 11:59:00.00Z])
+  gen_nothing_outstanding_test("current_date_time realized", &Outstand.current_date_time/1, DateTime.now!("Etc/UTC"))
+  gen_result_outstanding_test("current_date_time value result", &Outstand.current_date_time/1, "~U[2002-02-25 11:59:00.00Z]", :current_date_time)
+
   gen_something_outstanding_test("empty_list value outstanding", &Outstand.empty_list/1, [:a])
   gen_nothing_outstanding_test("empty_list realized", &Outstand.empty_list/1, [])
   gen_result_outstanding_test("empty_list value result", &Outstand.empty_list/1, [:a], :empty_list)
@@ -67,6 +75,10 @@ defmodule Outstanding.FunctionTest do
   gen_nothing_outstanding_test("explicit_nil realized", &Outstand.explicit_nil/1, nil)
   gen_result_outstanding_test("explicit_nil value result", &Outstand.explicit_nil/1, true, :explicit_nil)
 
+  gen_something_outstanding_test("future_date_time value outstanding", &Outstand.future_date_time/1, ~U[2002-02-25 11:59:00.00Z])
+  gen_nothing_outstanding_test("future_date_time realized", &Outstand.future_date_time/1, ~U[2102-02-25 11:59:00.00Z])
+  gen_result_outstanding_test("future_date_time value result", &Outstand.future_date_time/1, "~U[2002-02-25 11:59:00.00Z]", :future_date_time)
+
   gen_something_outstanding_test("non_empty_list value outstanding", &Outstand.non_empty_map/1, [])
   gen_nothing_outstanding_test("non_empty_list realized", &Outstand.non_empty_list/1, [:a])
   gen_result_outstanding_test("non_empty_list value result", &Outstand.non_empty_list/1, [], :non_empty_list)
@@ -78,4 +90,9 @@ defmodule Outstanding.FunctionTest do
   gen_something_outstanding_test("non_empty_map_set value outstanding", &Outstand.non_empty_map_set/1, MapSet.new())
   gen_nothing_outstanding_test("non_empty_map_set realized", &Outstand.non_empty_map_set/1, MapSet.new([:a]))
   gen_result_outstanding_test("non_empty_map_set value result", &Outstand.non_empty_map_set/1, MapSet.new(), :non_empty_map_set)
+
+  gen_something_outstanding_test("past_date_time value outstanding", &Outstand.past_date_time/1, ~U[2102-02-25 11:59:00.00Z])
+  gen_nothing_outstanding_test("past_date_time realized", &Outstand.past_date_time/1, ~U[2002-02-25 11:59:00.00Z])
+  gen_result_outstanding_test("past_date_time value result", &Outstand.past_date_time/1, "~U[2102-02-25 11:59:00.00Z]", :past_date_time)
+
 end

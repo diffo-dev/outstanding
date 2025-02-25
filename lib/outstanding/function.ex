@@ -12,6 +12,10 @@ defoutstanding expected :: Function, actual :: Boolean do
   expected.(actual)
 end
 
+defoutstanding expected :: Function, actual :: DateTime do
+  expected.(actual)
+end
+
 defoutstanding expected :: Function, actual :: Float do
   expected.(actual)
 end
