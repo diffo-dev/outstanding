@@ -301,7 +301,339 @@ defmodule Outstand do
     end
   end
 
+
   def suppress(term) when is_nil(term) do
     nil
+  end
+
+  @doc """
+  Function which expects any atom (nil is an atom)
+
+  ## Examples
+  ```
+  iex> Outstand.any_atom(:a)
+  nil
+  iex> Outstand.any_atom(nil)
+  nil
+  iex> Outstand.any_atom("a")
+  :any_atom
+  ```
+  """
+  @spec any_atom(any()) :: :any_atom | nil
+  def any_atom(actual) do
+    if is_atom(actual) do
+      nil
+    else
+      :any_atom
+    end
+  end
+
+  @doc """
+  Function which expects any bitstring
+
+  ## Examples
+  ```
+  iex> Outstand.any_bitstring("a")
+  nil
+  iex> Outstand.any_bitstring(:a)
+  :any_bitstring
+  iex> Outstand.any_bitstring(nil)
+  :any_bitstring
+  ```
+  """
+  @spec any_bitstring(any()) :: :any_bitstring | nil
+  def any_bitstring(actual) do
+    if is_bitstring(actual) do
+      nil
+    else
+      :any_bitstring
+    end
+  end
+
+  @doc """
+  Function which expects any boolean
+
+  ## Examples
+  ```
+  iex> Outstand.any_boolean(true)
+  nil
+  iex> Outstand.any_boolean("a")
+  :any_boolean
+  iex> Outstand.any_boolean(nil)
+  :any_boolean
+  ```
+  """
+  @spec any_boolean(any()) :: :any_boolean | nil
+  def any_boolean(actual) do
+    if is_boolean(actual) do
+      nil
+    else
+      :any_boolean
+    end
+  end
+
+  @doc """
+  Function which expects any float
+
+  ## Examples
+  ```
+  iex> Outstand.any_float(1.1)
+  nil
+  iex> Outstand.any_float(1)
+  :any_float
+  iex> Outstand.any_float(nil)
+  :any_float
+  ```
+  """
+  @spec any_float(any()) :: :any_float | nil
+  def any_float(actual) do
+    if is_float(actual) do
+      nil
+    else
+      :any_float
+    end
+  end
+
+  @doc """
+  Function which expects any integer
+
+  ## Examples
+  ```
+  iex> Outstand.any_integer(1)
+  nil
+  iex> Outstand.any_integer(1.1)
+  :any_integer
+  iex> Outstand.any_integer(nil)
+  :any_integer
+  ```
+  """
+  @spec any_integer(any()) :: :any_integer | nil
+  def any_integer(actual) do
+    if is_integer(actual) do
+      nil
+    else
+      :any_integer
+    end
+  end
+
+  @doc """
+  Function which expects any number
+
+  ## Examples
+  ```
+  iex> Outstand.any_number(1)
+  nil
+  iex> Outstand.any_number(1.1)
+  nil
+  iex> Outstand.any_number(nil)
+  :any_number
+  ```
+  """
+  @spec any_number(any()) :: :any_number | nil
+  def any_number(actual) do
+    if is_integer(actual) or is_float(actual) do
+      nil
+    else
+      :any_number
+    end
+  end
+
+  @doc """
+  Function which expects any range
+
+  ## Examples
+  ```
+  iex> Outstand.any_range(0..25//5)
+  nil
+  iex> Outstand.any_range(5)
+  :any_range
+  iex> Outstand.any_range(nil)
+  :any_range
+  ```
+  """
+  @spec any_range(any()) :: :any_range | nil
+  def any_range(actual) do
+    case actual do
+      _first.._last//_step ->
+        nil
+      _ ->
+        :any_range
+    end
+  end
+
+  @doc """
+  Function which expects any tuple
+
+  ## Examples
+  ```
+  iex> Outstand.any_tuple({:a, :b, :c})
+  nil
+  iex> Outstand.any_tuple([:a])
+  :any_tuple
+  iex> Outstand.any_tuple(nil)
+  :any_tuple
+  ```
+  """
+  @spec any_tuple(any()) :: :any_tuple | nil
+  def any_tuple(actual) do
+    if is_tuple(actual) do
+      nil
+    else
+      :any_tuple
+    end
+  end
+
+  @doc """
+  Function which expects any list, including []
+
+  ## Examples
+  ```
+  iex> Outstand.any_list([:a])
+  nil
+  iex> Outstand.any_list([])
+  nil
+  iex> Outstand.any_list({:a, :b, :c})
+  :any_list
+  iex> Outstand.any_list(nil)
+  :any_list
+  ```
+  """
+  @spec any_list(any()) :: :any_list | nil
+  def any_list(actual) do
+    if is_list(actual) do
+      nil
+    else
+      :any_list
+    end
+  end
+
+  @doc """
+  Function which expects empty list
+
+  ## Examples
+  ```
+  iex> Outstand.empty_list([])
+  nil
+  iex> Outstand.empty_list([:a])
+  :empty_list
+  iex> Outstand.empty_list(nil)
+  :empty_list
+  ```
+  """
+  @spec empty_list(any()) :: :empty_list | nil
+  def empty_list(actual) do
+    if is_list(actual) && Enum.empty?(actual) do
+      nil
+    else
+      :empty_list
+    end
+  end
+
+  @doc """
+  Function which expects non empty list
+
+  ## Examples
+  ```
+  iex> Outstand.non_empty_list([:a])
+  nil
+  iex> Outstand.non_empty_list([])
+  :non_empty_list
+  iex> Outstand.non_empty_list(nil)
+  :non_empty_list
+  ```
+  """
+  @spec non_empty_list(any()) :: :non_empty_list | nil
+  def non_empty_list(actual) do
+    if is_list(actual) && !Enum.empty?(actual) do
+      nil
+    else
+      :non_empty_list
+    end
+  end
+
+  @doc """
+  Function which expects any map
+
+  ## Examples
+  ```
+  iex> Outstand.any_map(%{a: :a})
+  nil
+  iex> Outstand.any_map([:a])
+  :any_map
+  iex> Outstand.any_map(nil)
+  :any_map
+  ```
+  """
+  @spec any_map(any()) :: :any_map | nil
+  def any_map(actual) do
+    if is_map(actual) do
+      nil
+    else
+      :any_map
+    end
+  end
+
+  @doc """
+  Function which expects empty map
+
+  ## Examples
+  ```
+  iex> Outstand.empty_map(%{})
+  nil
+  iex> Outstand.empty_map(%{a: :a})
+  :empty_map
+  iex> Outstand.empty_map(nil)
+  :empty_map
+  ```
+  """
+  @spec empty_map(any()) :: :empty_map | nil
+  def empty_map(actual) do
+    if is_map(actual) && Enum.empty?(actual) do
+      nil
+    else
+      :empty_map
+    end
+  end
+
+  @doc """
+  Function which expects non empty map
+
+  ## Examples
+  ```
+  iex> Outstand.non_empty_map(%{a: :a})
+  nil
+  iex> Outstand.non_empty_map(%{})
+  :non_empty_map
+  iex> Outstand.non_empty_map(nil)
+  :non_empty_map
+  ```
+  """
+  @spec non_empty_map(any()) :: :non_empty_map | nil
+  def non_empty_map(actual) do
+    if is_map(actual) && !Enum.empty?(actual) do
+      nil
+    else
+      :non_empty_map
+    end
+  end
+
+  @doc """
+  Function which expects explicit nil
+
+  ## Examples
+  ```
+  iex> Outstand.explicit_nil(nil)
+  nil
+  iex> Outstand.explicit_nil(:a)
+  :explicit_nil
+  ```
+  """
+  @spec explicit_nil(any()) :: :explicit_nil | nil
+  def explicit_nil(actual) do
+    if actual == nil do
+      nil
+    else
+      :explicit_nil
+    end
   end
 end

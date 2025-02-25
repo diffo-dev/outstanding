@@ -1,12 +1,12 @@
 # Outstanding
 
-Outstanding, not as in 'the scarecrow was outstanding in his field', rather outstanding as in something not yet dealt with.
+Outstanding: something not yet dealt with.
 
 The outstanding protocol is for those times when you want to know if any or which expectations have not been sufficiently met, and equality doesn't actually do it for you.
 
 We have two terms, `expected` and  `actual`, apply `outstanding(expected, actual)` and see if nothing is outstanding `nil`, or we get back what is `outstanding` for us to work on.
 
-Outstanding implementations are provided for most types, as well as helper functions to make it easy to add support for your structs.
+Outstanding implementations are provided for most types, as well as helper functions to make it easy to add implementations for your structs. Outstanding implementations which accept expected Functions are provided, providing a point of extensibility. Convenience expected functions are also provided.
 
 ```elixir
 iex> Outstand.outstanding(%{x: :a, y: :b}, %{})
@@ -42,10 +42,43 @@ We often have minimum expectations that must be met, which when not met by actua
 We may expect something to exist, but we may not know its identifier yet. If we have a list of managed child services, and imagine a scenario where while our backup feature is enabled, we should have a backup child service, however before we acquire it we won't know its identity.
 
 | scenario                          | expected                                 | actual                                         | outstanding? | outstanding                     |
+|-----------------------------------|------------------------------------------|-----------------------------------------------|--------------|---------------------------------|
 | no backup                         | []                                       | []                                             | false        | nil                             |
 | enable backup - commmenced        | [%{alias: :backup, state: :ok}]          | []                                             | true         | [%{alias: :backup, state: :ok}] |
 | enable backup - backup created    | [%{alias: :backup, state: :ok}]          | [%{alias: :backup, id: 453, state: :starting}] | true         | [%{alias: :backup, state: :ok}] |
 | enable backup - backup bound      | [%{alias: :backup, id: 453, state: :ok}] | [%{alias: :backup, id: 453, state: :ok}]       | false        | nil                             |
+ 
+Once we've created a backup child we want to keep track of it, so we refine the expectation to include it's specific id. We also monitor its behaviour and apply corrective action, just like a real child.
+
+An application using outstanding would update expected, then do work based on what is outstanding given actual.Outstanding can be further processed (by your code) to detemine next action based on your priority of goals not met, constraints, business rules, etc. 
+
+## Expected Functions
+Sometimes our expectation is a bit vague, for instance in the example above we initially did not know the id. We can supply a function as an expectation, when not met this supplies a corresponding atom.
+
+```elixir
+iex> use Outstand
+Outstand
+
+iex> Outstand.outstanding(&Outstand.any_integer/1, 546)
+nil
+iex> Outstand.outstanding(&Outstand.any_integer/1, nil)
+:any_integer
+
+```
+
+&Outstand.any_integer/1 is one of many convenience functions in Outstand.
+```elixir
+  @spec any_integer(any()) :: :any_integer | nil
+  def any_integer(actual) do
+    if is_integer(actual) do
+      nil
+    else
+      :any_integer
+    end
+  end
+```
+
+You can supply your own functions where needed.
 
 ## Utilities
 
