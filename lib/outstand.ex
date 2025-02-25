@@ -117,9 +117,9 @@ defmodule Outstand do
         uq_expected = unquote(expected)
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual == nil
-        #assert outstanding(uq_expected, uq_actual) == nil
-        #refute uq_expected >>> uq_actual
-        #refute outstanding?(uq_expected, uq_actual)
+        assert Outstand.outstanding(uq_expected, uq_actual) == nil
+        refute uq_expected >>> uq_actual
+        refute Outstand.outstanding?(uq_expected, uq_actual)
       end
     end
   end
@@ -130,9 +130,9 @@ defmodule Outstand do
         uq_expected = unquote(expected)
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual != nil
-        #assert outstanding(uq_expected, uq_actual) != nil
-        #assert uq_expected >>> uq_actual
-        #assert outstanding?(uq_expected, uq_actual)
+        assert Outstand.outstanding(uq_expected, uq_actual) != nil
+        assert uq_expected >>> uq_actual
+        assert Outstand.outstanding?(uq_expected, uq_actual)
       end
     end
   end
@@ -144,9 +144,9 @@ defmodule Outstand do
         uq_actual = unquote(actual)
         uq_outstanding = unquote(outstanding)
         assert uq_expected --- uq_actual == uq_outstanding
-        #assert outstanding(uq_expected, uq_actual) == uq_outstanding
-        #assert uq_expected >>> uq_actual == outstanding?(uq_outstanding)
-        #assert outstanding?(uq_expected, uq_actual) == outstanding?(uq_outstanding)
+        assert Outstand.outstanding(uq_expected, uq_actual) == uq_outstanding
+        assert uq_expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
+        assert Outstand.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
       end
     end
   end
