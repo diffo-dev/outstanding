@@ -373,6 +373,29 @@ defmodule Outstand do
   end
 
   @doc """
+  Function which expects any date
+
+  ## Examples
+  ```
+  iex> Outstand.any_date(~D[2025-02-25])
+  nil
+  iex> Outstand.any_date("2025-02-25")
+  :any_date
+  iex> Outstand.any_date(nil)
+  :any_date
+  ```
+  """
+  @spec any_date(any()) :: :any_date | nil
+  def any_date(actual) do
+    case actual do
+      %Date{} ->
+        nil
+      _ ->
+        :any_date
+    end
+  end
+
+  @doc """
   Function which expects any date time
 
   ## Examples
@@ -392,6 +415,52 @@ defmodule Outstand do
         nil
       _ ->
         :any_date_time
+    end
+  end
+
+  @doc """
+  Function which expects any naive date time
+
+  ## Examples
+  ```
+  iex> Outstand.any_naive_date_time(~N[2025-02-25 11:59:00])
+  nil
+  iex> Outstand.any_naive_date_time("2025-02-25")
+  :any_naive_date_time
+  iex> Outstand.any_naive_date_time(nil)
+  :any_naive_date_time
+  ```
+  """
+  @spec any_naive_date_time(any()) :: :any_naive_date_time | nil
+  def any_naive_date_time(actual) do
+    case actual do
+      %NaiveDateTime{} ->
+        nil
+      _ ->
+        :any_naive_date_time
+    end
+  end
+
+      @doc """
+  Function which expects any naive date time
+
+  ## Examples
+  ```
+  iex> Outstand.any_time(~T[11:59:00.000])
+  nil
+  iex> Outstand.any_time("11:59:00.000")
+  :any_time
+  iex> Outstand.any_time(nil)
+  :any_time
+  ```
+  """
+  @spec any_time(any()) :: :any_time | nil
+  def any_time(actual) do
+    case actual do
+      %Time{} ->
+        nil
+      _ ->
+        :any_time
     end
   end
 
@@ -577,12 +646,43 @@ defmodule Outstand do
     end
   end
 
-   @doc """
+  @doc """
+  Function which expects current date
+
+  ## Examples
+  ```
+  iex> today = DateTime.utc_now() |> DateTime.to_date()
+  iex> Outstand.current_date(today)
+  nil
+  iex> Outstand.current_date(today |> Date.add(1))
+  :current_date
+  iex> Outstand.current_date(today |> Date.add(-1))
+  :current_date
+  iex> Outstand.current_date(nil)
+  :current_date
+  ```
+  """
+  @spec current_date(any()) :: :current_date | nil
+  def current_date(actual) do
+    case actual do
+      %Date{} ->
+        if Date.after?(actual, DateTime.utc_now() |> DateTime.to_date() |> Date.add(-1)) &&
+          Date.before?(actual, DateTime.utc_now() |> DateTime.to_date() |> Date.add(1)) do
+          nil
+        else
+          :current_date
+        end
+      _ ->
+        :current_date
+    end
+  end
+
+  @doc """
   Function which expects current date time (+/- 1 min from now)
 
   ## Examples
   ```
-  iex> now = DateTime.now!("Etc/UTC")
+  iex> now = DateTime.utc_now()
   iex> Outstand.current_date_time(now)
   nil
   iex> Outstand.current_date_time(now |> DateTime.add(2, :minute))
@@ -593,18 +693,80 @@ defmodule Outstand do
   :current_date_time
   ```
   """
-  @spec current_date_time(any()) :: :currente_date_time | nil
+  @spec current_date_time(any()) :: :current_date_time | nil
   def current_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.after?(actual, DateTime.now!("Etc/UTC") |> DateTime.add(-1, :minute)) &&
-          DateTime.before?(actual, DateTime.now!("Etc/UTC") |> DateTime.add(1, :minute)) do
+        if DateTime.after?(actual, DateTime.utc_now() |> DateTime.add(-1, :minute)) &&
+          DateTime.before?(actual, DateTime.utc_now() |> DateTime.add(1, :minute)) do
           nil
         else
           :current_date_time
         end
       _ ->
         :current_date_time
+    end
+  end
+
+  @doc """
+  Function which expects current naive date time (+/- 1 min from now)
+
+  ## Examples
+  ```
+  iex> now = DateTime.utc_now() |> DateTime.to_naive()
+  iex> Outstand.current_naive_date_time(now)
+  nil
+  iex> Outstand.current_naive_date_time(now |> NaiveDateTime.add(2, :minute))
+  :current_naive_date_time
+  iex> Outstand.current_naive_date_time(now |> NaiveDateTime.add(-2, :minute))
+  :current_naive_date_time
+  iex> Outstand.current_naive_date_time(nil)
+  :current_naive_date_time
+  ```
+  """
+  @spec current_naive_date_time(any()) :: :current_naive_date_time | nil
+  def current_naive_date_time(actual) do
+    case actual do
+      %NaiveDateTime{} ->
+        if NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(-1, :minute)) &&
+          NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(1, :minute)) do
+          nil
+        else
+          :current_naive_date_time
+        end
+      _ ->
+        :current_naive_date_time
+    end
+  end
+
+  @doc """
+  Function which expects current time (+/- 1 min from now)
+
+  ## Examples
+  ```
+  iex> now = DateTime.utc_now() |> DateTime.to_time()
+  iex> Outstand.current_time(now)
+  nil
+  iex> Outstand.current_time(now |> Time.add(2, :minute))
+  :current_time
+  iex> Outstand.current_time(now |> Time.add(-2, :minute))
+  :current_time
+  iex> Outstand.current_time(nil)
+  :current_time
+  ```
+  """
+  @spec current_time(any()) :: :current_time | nil
+  def current_time(actual) do
+    case actual do
+      %Time{} ->
+        if Time.after?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(-1, :minute)) &&
+          Time.before?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(1, :minute)) do
+          nil
+        else
+          :current_time
+        end
+      _ ->
+        :current_time
     end
   end
 
@@ -716,13 +878,67 @@ defmodule Outstand do
   def future_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.after?(actual, DateTime.now!("Etc/UTC")) do
+        if DateTime.after?(actual, DateTime.utc_now()) do
           nil
         else
           :future_date_time
         end
       _ ->
         :future_date_time
+    end
+  end
+
+  @doc """
+  Function which expects future naive date time
+
+  ## Examples
+  ```
+  iex> Outstand.future_naive_date_time(~N[2102-02-25 11:59:00])
+  nil
+  iex> Outstand.future_naive_date_time(~N[2002-02-25 11:59:00])
+  :future_naive_date_time
+  iex> Outstand.future_naive_date_time(nil)
+  :future_naive_date_time
+  ```
+  """
+  @spec future_naive_date_time(any()) :: :future_naive_date_time | nil
+  def future_naive_date_time(actual) do
+    case actual do
+      %NaiveDateTime{} ->
+        if NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive()) do
+          nil
+        else
+          :future_naive_date_time
+        end
+      _ ->
+        :future_naive_date_time
+    end
+  end
+
+  @doc """
+  Function which expects future time
+
+  ## Examples
+  ```
+  iex> Outstand.future_time(~T[23:59:59])
+  nil
+  iex> Outstand.future_time(~T[00:00:00])
+  :future_time
+  iex> Outstand.future_time(nil)
+  :future_time
+  ```
+  """
+  @spec future_time(any()) :: :future_time | nil
+  def future_time(actual) do
+    case actual do
+      %Time{} ->
+        if Time.after?(actual, DateTime.utc_now() |> DateTime.to_time()) do
+          nil
+        else
+          :future_time
+        end
+      _ ->
+        :future_time
     end
   end
 
@@ -814,13 +1030,67 @@ defmodule Outstand do
   def past_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.before?(actual, DateTime.now!("Etc/UTC")) do
+        if DateTime.before?(actual, DateTime.utc_now()) do
           nil
         else
           :past_date_time
         end
       _ ->
         :past_date_time
+    end
+  end
+
+  @doc """
+  Function which expects past date time
+
+  ## Examples
+  ```
+  iex> Outstand.past_naive_date_time(~N[2002-02-25 11:59:00])
+  nil
+  iex> Outstand.past_naive_date_time(~N[2102-02-25 11:59:00])
+  :past_naive_date_time
+  iex> Outstand.past_naive_date_time(nil)
+  :past_naive_date_time
+  ```
+  """
+  @spec past_naive_date_time(any()) :: :past_naive_date_time | nil
+  def past_naive_date_time(actual) do
+    case actual do
+      %NaiveDateTime{} ->
+        if NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive()) do
+          nil
+        else
+          :past_naive_date_time
+        end
+      _ ->
+        :past_naive_date_time
+    end
+  end
+
+  @doc """
+  Function which expects past time
+
+  ## Examples
+  ```
+  iex> Outstand.past_time(~T[00:00:00.000])
+  nil
+  iex> Outstand.past_time(~T[23:59:59.999])
+  :past_time
+  iex> Outstand.past_time(nil)
+  :past_time
+  ```
+  """
+  @spec past_time(any()) :: :past_time | nil
+  def past_time(actual) do
+    case actual do
+      %Time{} ->
+        if Time.before?(actual, DateTime.utc_now() |> DateTime.to_time()) do
+          nil
+        else
+          :past_time
+        end
+      _ ->
+        :past_time
     end
   end
 

@@ -12,6 +12,10 @@ defoutstanding expected :: Function, actual :: Boolean do
   expected.(actual)
 end
 
+defoutstanding expected :: Function, actual :: Date do
+  expected.(actual)
+end
+
 defoutstanding expected :: Function, actual :: DateTime do
   expected.(actual)
 end
@@ -36,7 +40,15 @@ defoutstanding expected :: Function, actual :: MapSet do
   expected.(actual)
 end
 
+defoutstanding expected :: Function, actual :: NaiveDateTime do
+  expected.(actual)
+end
+
 defoutstanding expected :: Function, actual :: Range do
+  expected.(actual)
+end
+
+defoutstanding expected :: Function, actual :: Time do
   expected.(actual)
 end
 
