@@ -853,11 +853,13 @@ defmodule Outstand do
   Range
   iex> Outstand.type_of({:a, :b, :c})
   Tuple
+  iex> Outstand.type_of(~U[2025-02-25 11:59:00.00Z])
+  DateTime
   iex> Outstand.type_of(~D[2025-02-25])
   Date
   ```
   """
-
+  @spec type_of(any()) :: module()
   def type_of(term) do
     case term do
       _first.._last//_step  -> Range
