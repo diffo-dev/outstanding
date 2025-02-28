@@ -1,6 +1,6 @@
 use Outstand
 
-defoutstanding expected :: Atom, actual :: Atom do
+defoutstanding expected :: Atom, actual :: Any do
   # nil is an atom, so needs to be handled here
   # nil expectation always met
   case {expected, actual} do

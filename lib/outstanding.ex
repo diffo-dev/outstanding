@@ -8,8 +8,8 @@ defprotocol Outstanding do
   @type result :: nil | Outstanding.t()
 
   @doc """
-  Accepts struct with fields :expected and :actual, returns nil or outstanding
+  Outstanding of expected realised by actual, returns nil or outstanding
   """
-  @spec outstanding(t) :: result
-  def outstanding(expected_and_actual)
+  @spec outstanding(t, any()) :: result
+  def outstanding(expected, actual)
 end

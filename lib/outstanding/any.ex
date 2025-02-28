@@ -9,7 +9,7 @@ defoutstanding expected :: Any, actual :: Any do
     {%name{}, %name{}} ->
       expected
       |> Map.from_struct()
-      |> Outstand.outstanding(Map.from_struct(actual))
+      |> Outstanding.outstanding(Map.from_struct(actual))
     {_, _} ->
       # not an exact match so default to outstanding
       expected

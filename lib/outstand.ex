@@ -3,9 +3,6 @@ defmodule Outstand do
   Provides utilities to implement and work with `Outstanding` types
   """
 
-  @type expected:: term
-  @type actual :: term
-
   @doc """
   Enables infix `---`, `>>>` shortcuts, `defoutstanding`,
   `gen_nothing_outstanding_test`, `gen_something_outstanding_test` `gen_result_outstanding_test` macro
@@ -43,21 +40,20 @@ defmodule Outstand do
   ...>   defmodule Bar do
   ...>     defstruct [:value, :meta]
   ...>   end
-  ...>   defoutstanding %Foo{value: expected} :: Foo, %Foo{value: actual} :: Foo do
-  ...>     Outstand.outstanding(expected, actual)
-  ...>   end
-  ...>   defoutstanding %Foo{value: expected} :: Foo, %Bar{value: actual} :: Bar do
-  ...>     Outstand.outstanding(expected, actual)
-  ...>   end
-  ...>   defoutstanding %Foo{value: expected} :: Foo, actual :: Integer do
-  ...>     Outstand.outstanding(expected, actual)
+  ...>   defoutstanding expected :: Foo, actual :: Any do
+  ...>     case Outstand.type_of(actual) do
+  ...>       Foo -> Outstanding.outstanding(expected.value, actual.value)
+  ...>       Bar -> Outstanding.outstanding(expected.value, actual.value)
+  ...>       Integer -> Outstanding.outstanding(expected.value, actual)
+  ...>       _ -> expected
+  ...>     end
   ...>   end
   ...> end
   ...> |> Code.compile_quoted
   iex> quote do
   ...>   expected = %Foo{value: 1, meta: 1}
   ...>   actual = %Foo{value: 1, meta: 2}
-  ...>   Outstand.outstanding(expected, actual)
+  ...>   Outstanding.outstanding(expected, actual)
   ...> end
   ...> |> Code.eval_quoted
   ...> |> elem(0)
@@ -65,7 +61,7 @@ defmodule Outstand do
   iex> quote do
   ...>   expected = %Foo{value: 1, meta: 1}
   ...>   actual = %Bar{value: 1, meta: 2}
-  ...>   Outstand.outstanding(expected, actual)
+  ...>   Outstanding.outstanding(expected, actual)
   ...> end
   ...> |> Code.eval_quoted
   ...> |> elem(0)
@@ -73,7 +69,7 @@ defmodule Outstand do
   iex> quote do
   ...>   expected = %Foo{value: 1, meta: 1}
   ...>   actual = 1
-  ...>   Outstand.outstanding(expected, actual)
+  ...>   Outstanding.outstanding(expected, actual)
   ...> end
   ...> |> Code.eval_quoted
   ...> |> elem(0)
@@ -82,29 +78,14 @@ defmodule Outstand do
   """
   defmacro defoutstanding(
              {:"::", _, [expected_expression, quoted_expected_type]},
-             {:"::", _, [actual_expression, quoted_actual_type]},
+             {:"::", _, [actual_expression, _quoted_actual_type]},
              do: code
            ) do
     {expected_type, []} = Code.eval_quoted(quoted_expected_type, [], __CALLER__)
 
-    {actual_type, []} = Code.eval_quoted(quoted_actual_type, [], __CALLER__)
-
-    type =
-      [Outstanding, Type, expected_type, And, actual_type]
-      |> Module.concat()
-
     quote do
-      defmodule unquote(type) do
-        @fields [:expected, :actual]
-        @enforce_keys @fields
-        defstruct @fields
-      end
-
-      defimpl Outstanding, for: unquote(type) do
-        def outstanding(%unquote(type){
-          expected: unquote(expected_expression),
-          actual: unquote(actual_expression)
-        }) do
+      defimpl Outstanding, for: unquote(expected_type) do
+        def outstanding(unquote(expected_expression), unquote(actual_expression)) do
           unquote(code)
         end
       end
@@ -117,7 +98,7 @@ defmodule Outstand do
         uq_expected = unquote(expected)
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual == nil
-        assert Outstand.outstanding(uq_expected, uq_actual) == nil
+        assert Outstanding.outstanding(uq_expected, uq_actual) == nil
         refute uq_expected >>> uq_actual
         refute Outstand.outstanding?(uq_expected, uq_actual)
       end
@@ -130,7 +111,7 @@ defmodule Outstand do
         uq_expected = unquote(expected)
         uq_actual = unquote(actual)
         assert uq_expected --- uq_actual != nil
-        assert Outstand.outstanding(uq_expected, uq_actual) != nil
+        assert Outstanding.outstanding(uq_expected, uq_actual) != nil
         assert uq_expected >>> uq_actual
         assert Outstand.outstanding?(uq_expected, uq_actual)
       end
@@ -144,7 +125,7 @@ defmodule Outstand do
         uq_actual = unquote(actual)
         uq_outstanding = unquote(outstanding)
         assert uq_expected --- uq_actual == uq_outstanding
-        assert Outstand.outstanding(uq_expected, uq_actual) == uq_outstanding
+        assert Outstanding.outstanding(uq_expected, uq_actual) == uq_outstanding
         assert uq_expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
         assert Outstand.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
       end
@@ -152,7 +133,7 @@ defmodule Outstand do
   end
 
   @doc """
-  Infix shortcut --- for `Outstand.outstanding/2`
+  Infix shortcut --- for `Outstanding.outstanding/2`
 
   ## Examples
 
@@ -168,7 +149,7 @@ defmodule Outstand do
   defmacro expected --- actual do
     quote do
       unquote(expected)
-      |> Outstand.outstanding(unquote(actual))
+      |> Outstanding.outstanding(unquote(actual))
     end
   end
 
@@ -229,49 +210,11 @@ defmodule Outstand do
   true
   ```
   """
-  @spec outstanding?(expected, actual) :: boolean()
+  @spec outstanding?(Outstanding.t, any) :: boolean()
   def outstanding?(expected, actual) do
-    outstanding?(Outstand.outstanding(expected, actual))
+    outstanding?(Outstanding.outstanding(expected, actual))
   end
 
-  @doc """
-  Outstanding of expected and actual term
-
-  ## Examples
-
-  ```
-  iex> Outstand.outstanding(1, 1)
-  nil
-  iex> Outstand.outstanding(1, nil)
-  1
-  iex> Outstand.outstanding(1, 2)
-  1
-  ```
-  """
-  @spec outstanding(expected, actual) :: Outstanding.result()
-  def outstanding(expected, actual) do
-    expected
-    |> new(actual)
-    |> Outstanding.outstanding()
-  end
-
-  defp new(expected, actual) do
-
-    ea_type =
-      try do
-        [Outstanding, Type, Outstand.type_of(expected), And, Outstand.type_of(actual)]
-        |> Module.safe_concat()
-      rescue
-        ArgumentError ->
-          #IO.inspect(Typable.type_of(expected), label: "new type_of expected")
-          #IO.inspect(Typable.type_of(actual), label: "new type_of actual")
-          [Outstanding, Type, Any, And, Any]
-          |> Module.safe_concat()
-      end
-
-    %{__struct__: ea_type, expected: expected, actual: actual}
-    #|> IO.inspect(label: "new")
-  end
 
   @doc """
   Suppress outstanding result when empty map or list
@@ -441,7 +384,7 @@ defmodule Outstand do
     end
   end
 
-      @doc """
+  @doc """
   Function which expects any naive date time
 
   ## Examples
@@ -1010,6 +953,28 @@ defmodule Outstand do
         end
       _ ->
         :non_empty_map_set
+    end
+  end
+
+  @doc """
+  Function which expects any not nil atom
+
+  ## Examples
+  ```
+  iex> Outstand.non_nil_atom(:a)
+  nil
+  iex> Outstand.non_nil_atom(nil)
+  :non_nil_atom
+  iex> Outstand.non_nil_atom("a")
+  :non_nil_atom
+  ```
+  """
+  @spec non_nil_atom(any()) :: :non_nil_atom | nil
+  def non_nil_atom(actual) do
+    if actual != nil && is_atom(actual) do
+      nil
+    else
+      :non_nil_atom
     end
   end
 
