@@ -18,7 +18,44 @@ defmodule Outstand do
           defoutstanding: 3,
           gen_nothing_outstanding_test: 3,
           gen_something_outstanding_test: 3,
-          gen_result_outstanding_test: 4
+          gen_result_outstanding_test: 4,
+          outstanding?: 2,
+          outstanding?: 1,
+          any_atom: 1,
+          any_bitstring: 1,
+          any_boolean: 1,
+          any_date: 1,
+          any_date_time: 1,
+          any_float: 1,
+          any_integer: 1,
+          any_map: 1,
+          any_map_set: 1,
+          any_naive_date_time: 1,
+          any_number: 1,
+          any_range: 1,
+          any_time: 1,
+          any_tuple: 1,
+          current_date: 1,
+          current_date_time: 1,
+          current_naive_date_time: 1,
+          current_time: 1,
+          empty_list: 1,
+          empty_map: 1,
+          empty_map_set: 1,
+          explicit_nil: 1,
+          future_date: 1,
+          future_date_time: 1,
+          future_naive_date_time: 1,
+          future_time: 1,
+          non_empty_list: 1,
+          non_empty_map: 1,
+          non_empty_map_set: 1,
+          non_nil_atom: 1,
+          past_date: 1,
+          past_date_time: 1,
+          past_naive_date_time: 1,
+          past_time: 1,
+          suppress: 1,
         ]
     end
   end
@@ -119,15 +156,29 @@ defmodule Outstand do
   end
 
   defmacro gen_result_outstanding_test(name, expected, actual, outstanding) do
-    quote do
-      test unquote(name) do
-        uq_expected = unquote(expected)
-        uq_actual = unquote(actual)
-        uq_outstanding = unquote(outstanding)
-        assert uq_expected --- uq_actual == uq_outstanding
-        assert Outstanding.outstanding(uq_expected, uq_actual) == uq_outstanding
-        assert uq_expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
-        assert Outstand.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
+    if (is_function(expected)) do
+      IO.inspect(expected, label: "gen result outstanding test - function")
+      quote do
+        test unquote(name) do
+          uq_expected = unquote(expected)
+          uq_actual = unquote(actual)
+          assert expected --- uq_actual == outstanding
+          assert Outstanding.outstanding(expected, uq_actual) == outstanding
+          assert expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
+          assert Outstand.outstanding?(expected, uq_actual) == Outstand.outstanding?(outstanding)
+        end
+      end
+    else
+      quote do
+        test unquote(name) do
+          uq_expected = unquote(expected)
+          uq_actual = unquote(actual)
+          uq_outstanding = unquote(outstanding)
+          assert uq_expected --- uq_actual == uq_outstanding
+          assert Outstanding.outstanding(uq_expected, uq_actual) == uq_outstanding
+          assert uq_expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
+          assert Outstand.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
+        end
       end
     end
   end
@@ -255,20 +306,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_atom(:a)
-  nil
+  true
   iex> Outstand.any_atom(nil)
-  nil
+  true
   iex> Outstand.any_atom("a")
-  :any_atom
+  false
   ```
   """
-  @spec any_atom(any()) :: :any_atom | nil
+  @spec any_atom(any()) :: boolean
   def any_atom(actual) do
-    if is_atom(actual) do
-      nil
-    else
-      :any_atom
-    end
+    is_atom(actual)
   end
 
   @doc """
@@ -277,20 +324,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_bitstring("a")
-  nil
+  true
   iex> Outstand.any_bitstring(:a)
-  :any_bitstring
+  false
   iex> Outstand.any_bitstring(nil)
-  :any_bitstring
+  false
   ```
   """
-  @spec any_bitstring(any()) :: :any_bitstring | nil
+  @spec any_bitstring(any()) :: boolean
   def any_bitstring(actual) do
-    if is_bitstring(actual) do
-      nil
-    else
-      :any_bitstring
-    end
+    is_bitstring(actual)
   end
 
   @doc """
@@ -299,20 +342,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_boolean(true)
-  nil
+  true
   iex> Outstand.any_boolean("a")
-  :any_boolean
+  false
   iex> Outstand.any_boolean(nil)
-  :any_boolean
+  false
   ```
   """
-  @spec any_boolean(any()) :: :any_boolean | nil
+  @spec any_boolean(any()) :: boolean
   def any_boolean(actual) do
-    if is_boolean(actual) do
-      nil
-    else
-      :any_boolean
-    end
+    is_boolean(actual)
   end
 
   @doc """
@@ -321,20 +360,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_date(~D[2025-02-25])
-  nil
+  true
   iex> Outstand.any_date("2025-02-25")
-  :any_date
+  false
   iex> Outstand.any_date(nil)
-  :any_date
+  false
   ```
   """
-  @spec any_date(any()) :: :any_date | nil
+  @spec any_date(any()) :: boolean()
   def any_date(actual) do
     case actual do
       %Date{} ->
-        nil
+        true
       _ ->
-        :any_date
+        false
     end
   end
 
@@ -344,20 +383,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_date_time(~U[2025-02-25 11:59:00.00Z])
-  nil
+  true
   iex> Outstand.any_date_time("2025-02-25")
-  :any_date_time
+  false
   iex> Outstand.any_date_time(nil)
-  :any_date_time
+  false
   ```
   """
-  @spec any_date_time(any()) :: :any_date_time | nil
+  @spec any_date_time(any()) :: boolean
   def any_date_time(actual) do
     case actual do
       %DateTime{} ->
-        nil
+        true
       _ ->
-        :any_date_time
+        false
     end
   end
 
@@ -367,20 +406,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_naive_date_time(~N[2025-02-25 11:59:00])
-  nil
+  true
   iex> Outstand.any_naive_date_time("2025-02-25")
-  :any_naive_date_time
+  false
   iex> Outstand.any_naive_date_time(nil)
-  :any_naive_date_time
+  false
   ```
   """
-  @spec any_naive_date_time(any()) :: :any_naive_date_time | nil
+  @spec any_naive_date_time(any()) :: boolean
   def any_naive_date_time(actual) do
     case actual do
       %NaiveDateTime{} ->
-        nil
+        true
       _ ->
-        :any_naive_date_time
+        false
     end
   end
 
@@ -390,20 +429,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_time(~T[11:59:00.000])
-  nil
+  true
   iex> Outstand.any_time("11:59:00.000")
-  :any_time
+  false
   iex> Outstand.any_time(nil)
-  :any_time
+  false
   ```
   """
-  @spec any_time(any()) :: :any_time | nil
+  @spec any_time(any()) :: boolean
   def any_time(actual) do
     case actual do
       %Time{} ->
-        nil
+        true
       _ ->
-        :any_time
+        false
     end
   end
 
@@ -413,20 +452,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_float(1.1)
-  nil
+  true
   iex> Outstand.any_float(1)
-  :any_float
+  false
   iex> Outstand.any_float(nil)
-  :any_float
+  false
   ```
   """
-  @spec any_float(any()) :: :any_float | nil
+  @spec any_float(any()) :: boolean
   def any_float(actual) do
-    if is_float(actual) do
-      nil
-    else
-      :any_float
-    end
+    is_float(actual)
   end
 
   @doc """
@@ -435,20 +470,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_integer(1)
-  nil
+  true
   iex> Outstand.any_integer(1.1)
-  :any_integer
+  false
   iex> Outstand.any_integer(nil)
-  :any_integer
+  false
   ```
   """
-  @spec any_integer(any()) :: :any_integer | nil
+  @spec any_integer(any()) :: boolean
   def any_integer(actual) do
-    if is_integer(actual) do
-      nil
-    else
-      :any_integer
-    end
+    is_integer(actual)
   end
 
   @doc """
@@ -457,22 +488,18 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_list([:a])
-  nil
+  true
   iex> Outstand.any_list([])
-  nil
+  true
   iex> Outstand.any_list({:a, :b, :c})
-  :any_list
+  false
   iex> Outstand.any_list(nil)
-  :any_list
+  false
   ```
   """
-  @spec any_list(any()) :: :any_list | nil
+  @spec any_list(any()) :: boolean
   def any_list(actual) do
-    if is_list(actual) do
-      nil
-    else
-      :any_list
-    end
+    is_list(actual)
   end
 
   @doc """
@@ -481,20 +508,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_map(%{a: :a})
-  nil
+  true
   iex> Outstand.any_map([:a])
-  :any_map
+  false
   iex> Outstand.any_map(nil)
-  :any_map
+  false
   ```
   """
-  @spec any_map(any()) :: :any_map | nil
+  @spec any_map(any()) :: boolean
   def any_map(actual) do
-    if is_map(actual) do
-      nil
-    else
-      :any_map
-    end
+    is_map(actual)
   end
 
   @doc """
@@ -503,22 +526,22 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_map_set(MapSet.new())
-  nil
+  true
   iex> Outstand.any_map_set(MapSet.new([:a]))
-  nil
+  true
   iex> Outstand.any_map_set([:a])
-  :any_map_set
+  false
   iex> Outstand.any_map_set(nil)
-  :any_map_set
+  false
   ```
   """
-  @spec any_map_set(any()) :: :any_map_set | nil
+  @spec any_map_set(any()) :: boolean
   def any_map_set(actual) do
     case actual do
       %MapSet{} ->
-        nil
+        true
       _ ->
-        :any_map_set
+        false
     end
   end
 
@@ -528,20 +551,18 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_number(1)
-  nil
+  true
   iex> Outstand.any_number(1.1)
-  nil
+  true
+  iex> Outstand.any_number("1")
+  false
   iex> Outstand.any_number(nil)
-  :any_number
+  false
   ```
   """
-  @spec any_number(any()) :: :any_number | nil
+  @spec any_number(any()) :: boolean
   def any_number(actual) do
-    if is_integer(actual) or is_float(actual) do
-      nil
-    else
-      :any_number
-    end
+    is_integer(actual) or is_float(actual)
   end
 
   @doc """
@@ -550,20 +571,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_range(0..25//5)
-  nil
+  true
   iex> Outstand.any_range(5)
-  :any_range
+  false
   iex> Outstand.any_range(nil)
-  :any_range
+  false
   ```
   """
-  @spec any_range(any()) :: :any_range | nil
+  @spec any_range(any()) :: boolean
   def any_range(actual) do
     case actual do
       _first.._last//_step ->
-        nil
+        true
       _ ->
-        :any_range
+        false
     end
   end
 
@@ -573,20 +594,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.any_tuple({:a, :b, :c})
-  nil
+  true
   iex> Outstand.any_tuple([:a])
-  :any_tuple
+  false
   iex> Outstand.any_tuple(nil)
-  :any_tuple
+  false
   ```
   """
-  @spec any_tuple(any()) :: :any_tuple | nil
+  @spec any_tuple(any()) :: boolean
   def any_tuple(actual) do
-    if is_tuple(actual) do
-      nil
-    else
-      :any_tuple
-    end
+    is_tuple(actual)
   end
 
   @doc """
@@ -596,27 +613,27 @@ defmodule Outstand do
   ```
   iex> today = DateTime.utc_now() |> DateTime.to_date()
   iex> Outstand.current_date(today)
-  nil
+  true
   iex> Outstand.current_date(today |> Date.add(1))
-  :current_date
+  false
   iex> Outstand.current_date(today |> Date.add(-1))
-  :current_date
+  false
   iex> Outstand.current_date(nil)
-  :current_date
+  false
   ```
   """
-  @spec current_date(any()) :: :current_date | nil
+  @spec current_date(any()) :: boolean
   def current_date(actual) do
     case actual do
       %Date{} ->
-        if Date.after?(actual, DateTime.utc_now() |> DateTime.to_date() |> Date.add(-1)) &&
-          Date.before?(actual, DateTime.utc_now() |> DateTime.to_date() |> Date.add(1)) do
-          nil
-        else
-          :current_date
-        end
+         case Date.compare(actual, DateTime.utc_now() |> DateTime.to_date()) do
+           :eq ->
+            true
+           _ ->
+            false
+         end
       _ ->
-        :current_date
+        false
     end
   end
 
@@ -627,27 +644,23 @@ defmodule Outstand do
   ```
   iex> now = DateTime.utc_now()
   iex> Outstand.current_date_time(now)
-  nil
+  true
   iex> Outstand.current_date_time(now |> DateTime.add(2, :minute))
-  :current_date_time
+  false
   iex> Outstand.current_date_time(now |> DateTime.add(-2, :minute))
-  :current_date_time
+  false
   iex> Outstand.current_date_time(nil)
-  :current_date_time
+  false
   ```
   """
-  @spec current_date_time(any()) :: :current_date_time | nil
+  @spec current_date_time(any()) :: boolean
   def current_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.after?(actual, DateTime.utc_now() |> DateTime.add(-1, :minute)) &&
-          DateTime.before?(actual, DateTime.utc_now() |> DateTime.add(1, :minute)) do
-          nil
-        else
-          :current_date_time
-        end
+        DateTime.after?(actual, DateTime.utc_now() |> DateTime.add(-1, :minute)) &&
+          DateTime.before?(actual, DateTime.utc_now() |> DateTime.add(1, :minute))
       _ ->
-        :current_date_time
+        false
     end
   end
 
@@ -658,27 +671,23 @@ defmodule Outstand do
   ```
   iex> now = DateTime.utc_now() |> DateTime.to_naive()
   iex> Outstand.current_naive_date_time(now)
-  nil
+  true
   iex> Outstand.current_naive_date_time(now |> NaiveDateTime.add(2, :minute))
-  :current_naive_date_time
+  false
   iex> Outstand.current_naive_date_time(now |> NaiveDateTime.add(-2, :minute))
-  :current_naive_date_time
+  false
   iex> Outstand.current_naive_date_time(nil)
-  :current_naive_date_time
+  false
   ```
   """
-  @spec current_naive_date_time(any()) :: :current_naive_date_time | nil
+  @spec current_naive_date_time(any()) :: boolean
   def current_naive_date_time(actual) do
     case actual do
       %NaiveDateTime{} ->
-        if NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(-1, :minute)) &&
-          NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(1, :minute)) do
-          nil
-        else
-          :current_naive_date_time
-        end
+        NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(-1, :minute)) &&
+          NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(1, :minute))
       _ ->
-        :current_naive_date_time
+        false
     end
   end
 
@@ -689,27 +698,23 @@ defmodule Outstand do
   ```
   iex> now = DateTime.utc_now() |> DateTime.to_time()
   iex> Outstand.current_time(now)
-  nil
+  true
   iex> Outstand.current_time(now |> Time.add(2, :minute))
-  :current_time
+  false
   iex> Outstand.current_time(now |> Time.add(-2, :minute))
-  :current_time
+  false
   iex> Outstand.current_time(nil)
-  :current_time
+  false
   ```
   """
-  @spec current_time(any()) :: :current_time | nil
+  @spec current_time(any()) :: boolean
   def current_time(actual) do
     case actual do
       %Time{} ->
-        if Time.after?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(-1, :minute)) &&
-          Time.before?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(1, :minute)) do
-          nil
-        else
-          :current_time
-        end
+        Time.after?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(-1, :minute)) &&
+          Time.before?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(1, :minute))
       _ ->
-        :current_time
+        false
     end
   end
 
@@ -719,20 +724,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.empty_list([])
-  nil
+  true
   iex> Outstand.empty_list([:a])
-  :empty_list
+  false
   iex> Outstand.empty_list(nil)
-  :empty_list
+  false
   ```
   """
-  @spec empty_list(any()) :: :empty_list | nil
+  @spec empty_list(any()) :: boolean
   def empty_list(actual) do
-    if is_list(actual) && Enum.empty?(actual) do
-      nil
-    else
-      :empty_list
-    end
+    is_list(actual) && Enum.empty?(actual)
   end
 
   @doc """
@@ -741,20 +742,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.empty_map(%{})
-  nil
+  true
   iex> Outstand.empty_map(%{a: :a})
-  :empty_map
+  false
   iex> Outstand.empty_map(nil)
-  :empty_map
+  false
   ```
   """
-  @spec empty_map(any()) :: :empty_map | nil
+  @spec empty_map(any()) :: boolean
   def empty_map(actual) do
-    if is_map(actual) && Enum.empty?(actual) do
-      nil
-    else
-      :empty_map
-    end
+    is_map(actual) && Enum.empty?(actual)
   end
 
   @doc """
@@ -763,24 +760,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.empty_map_set(MapSet.new())
-  nil
+  true
   iex> Outstand.empty_map_set(MapSet.new([:a]))
-  :empty_map_set
+  false
   iex> Outstand.empty_map_set(nil)
-  :empty_map_set
+  false
   ```
   """
-  @spec empty_map_set(any()) :: :empty_map_set | nil
+  @spec empty_map_set(any()) :: boolean
   def empty_map_set(actual) do
     case actual do
       %MapSet{} ->
-        if Enum.empty?(actual) do
-          nil
-        else
-          :empty_map_set
-        end
+        Enum.empty?(actual)
       _ ->
-        :empty_map_set
+        false
     end
   end
 
@@ -790,17 +783,36 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.explicit_nil(nil)
-  nil
+  true
   iex> Outstand.explicit_nil(:a)
-  :explicit_nil
+  false
   ```
   """
-  @spec explicit_nil(any()) :: :explicit_nil | nil
+  @spec explicit_nil(any()) :: boolean
   def explicit_nil(actual) do
-    if actual == nil do
-      nil
-    else
-      :explicit_nil
+    actual == nil
+  end
+
+  @doc """
+  Function which expects future date
+
+  ## Examples
+  ```
+  iex> Outstand.future_date(~D[2102-02-25])
+  true
+  iex> Outstand.future_date(~D[2002-02-25])
+  false
+  iex> Outstand.future_date(nil)
+  false
+  ```
+  """
+  @spec future_date(any()) :: boolean
+  def future_date(actual) do
+    case actual do
+      %Date{} ->
+        Date.after?(actual, DateTime.utc_now() |> DateTime.to_date())
+      _ ->
+        false
     end
   end
 
@@ -810,24 +822,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.future_date_time(~U[2102-02-25 11:59:00.00Z])
-  nil
+  true
   iex> Outstand.future_date_time(~U[2002-02-25 11:59:00.00Z])
-  :future_date_time
+  false
   iex> Outstand.future_date_time(nil)
-  :future_date_time
+  false
   ```
   """
-  @spec future_date_time(any()) :: :future_date_time | nil
+  @spec future_date_time(any()) :: boolean
   def future_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.after?(actual, DateTime.utc_now()) do
-          nil
-        else
-          :future_date_time
-        end
+        DateTime.after?(actual, DateTime.utc_now())
       _ ->
-        :future_date_time
+        false
     end
   end
 
@@ -837,24 +845,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.future_naive_date_time(~N[2102-02-25 11:59:00])
-  nil
+  true
   iex> Outstand.future_naive_date_time(~N[2002-02-25 11:59:00])
-  :future_naive_date_time
+  false
   iex> Outstand.future_naive_date_time(nil)
-  :future_naive_date_time
+  false
   ```
   """
-  @spec future_naive_date_time(any()) :: :future_naive_date_time | nil
+  @spec future_naive_date_time(any()) :: boolean
   def future_naive_date_time(actual) do
     case actual do
       %NaiveDateTime{} ->
-        if NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive()) do
-          nil
-        else
-          :future_naive_date_time
-        end
+        NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive())
       _ ->
-        :future_naive_date_time
+        false
     end
   end
 
@@ -864,24 +868,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.future_time(~T[23:59:59])
-  nil
+  true
   iex> Outstand.future_time(~T[00:00:00])
-  :future_time
+  false
   iex> Outstand.future_time(nil)
-  :future_time
+  false
   ```
   """
-  @spec future_time(any()) :: :future_time | nil
+  @spec future_time(any()) :: boolean
   def future_time(actual) do
     case actual do
       %Time{} ->
-        if Time.after?(actual, DateTime.utc_now() |> DateTime.to_time()) do
-          nil
-        else
-          :future_time
-        end
+        Time.after?(actual, DateTime.utc_now() |> DateTime.to_time())
       _ ->
-        :future_time
+        false
     end
   end
 
@@ -891,20 +891,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.non_empty_list([:a])
-  nil
+  true
   iex> Outstand.non_empty_list([])
-  :non_empty_list
+  false
   iex> Outstand.non_empty_list(nil)
-  :non_empty_list
+  false
   ```
   """
-  @spec non_empty_list(any()) :: :non_empty_list | nil
+  @spec non_empty_list(any()) :: boolean
   def non_empty_list(actual) do
-    if is_list(actual) && !Enum.empty?(actual) do
-      nil
-    else
-      :non_empty_list
-    end
+    is_list(actual) && !Enum.empty?(actual)
   end
 
   @doc """
@@ -913,20 +909,16 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.non_empty_map(%{a: :a})
-  nil
+  true
   iex> Outstand.non_empty_map(%{})
-  :non_empty_map
+  false
   iex> Outstand.non_empty_map(nil)
-  :non_empty_map
+  false
   ```
   """
-  @spec non_empty_map(any()) :: :non_empty_map | nil
+  @spec non_empty_map(any()) :: boolean
   def non_empty_map(actual) do
-    if is_map(actual) && !Enum.empty?(actual) do
-      nil
-    else
-      :non_empty_map
-    end
+    is_map(actual) && !Enum.empty?(actual)
   end
 
   @doc """
@@ -935,24 +927,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.non_empty_map_set(MapSet.new([:a]))
-  nil
+  true
   iex> Outstand.non_empty_map_set(MapSet.new())
-  :non_empty_map_set
+  false
   iex> Outstand.non_empty_map_set(nil)
-  :non_empty_map_set
+  false
   ```
   """
-  @spec non_empty_map_set(any()) :: :non_empty_map_set | nil
+  @spec non_empty_map_set(any()) :: boolean
   def non_empty_map_set(actual) do
     case actual do
       %MapSet{} ->
-        if !Enum.empty?(actual) do
-          nil
-        else
-          :non_empty_map_set
-        end
+        !Enum.empty?(actual)
       _ ->
-        :non_empty_map_set
+        false
     end
   end
 
@@ -962,19 +950,38 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.non_nil_atom(:a)
-  nil
+  true
   iex> Outstand.non_nil_atom(nil)
-  :non_nil_atom
+  false
   iex> Outstand.non_nil_atom("a")
-  :non_nil_atom
+  false
   ```
   """
-  @spec non_nil_atom(any()) :: :non_nil_atom | nil
+  @spec non_nil_atom(any()) :: boolean
   def non_nil_atom(actual) do
-    if actual != nil && is_atom(actual) do
-      nil
-    else
-      :non_nil_atom
+    actual != nil && is_atom(actual)
+  end
+
+  @doc """
+  Function which expects past date
+
+  ## Examples
+  ```
+  iex> Outstand.past_date(~D[2002-02-25])
+  true
+  iex> Outstand.past_date(~D[2102-02-25])
+  false
+  iex> Outstand.past_date(nil)
+  false
+  ```
+  """
+  @spec past_date(any()) :: boolean
+  def past_date(actual) do
+    case actual do
+      %Date{} ->
+        Date.before?(actual, DateTime.utc_now() |> DateTime.to_date())
+      _ ->
+        false
     end
   end
 
@@ -984,24 +991,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.past_date_time(~U[2002-02-25 11:59:00.00Z])
-  nil
+  true
   iex> Outstand.past_date_time(~U[2102-02-25 11:59:00.00Z])
-  :past_date_time
+  false
   iex> Outstand.past_date_time(nil)
-  :past_date_time
+  false
   ```
   """
-  @spec past_date_time(any()) :: :past_date_time | nil
+  @spec past_date_time(any()) :: boolean
   def past_date_time(actual) do
     case actual do
       %DateTime{} ->
-        if DateTime.before?(actual, DateTime.utc_now()) do
-          nil
-        else
-          :past_date_time
-        end
+        DateTime.before?(actual, DateTime.utc_now())
       _ ->
-        :past_date_time
+        false
     end
   end
 
@@ -1011,24 +1014,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.past_naive_date_time(~N[2002-02-25 11:59:00])
-  nil
+  true
   iex> Outstand.past_naive_date_time(~N[2102-02-25 11:59:00])
-  :past_naive_date_time
+  false
   iex> Outstand.past_naive_date_time(nil)
-  :past_naive_date_time
+  false
   ```
   """
-  @spec past_naive_date_time(any()) :: :past_naive_date_time | nil
+  @spec past_naive_date_time(any()) :: boolean
   def past_naive_date_time(actual) do
     case actual do
       %NaiveDateTime{} ->
-        if NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive()) do
-          nil
-        else
-          :past_naive_date_time
-        end
+        NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive())
       _ ->
-        :past_naive_date_time
+        false
     end
   end
 
@@ -1038,24 +1037,20 @@ defmodule Outstand do
   ## Examples
   ```
   iex> Outstand.past_time(~T[00:00:00.000])
-  nil
+  true
   iex> Outstand.past_time(~T[23:59:59.999])
-  :past_time
+  false
   iex> Outstand.past_time(nil)
-  :past_time
+  false
   ```
   """
-  @spec past_time(any()) :: :past_time | nil
+  @spec past_time(any()) :: boolean
   def past_time(actual) do
     case actual do
       %Time{} ->
-        if Time.before?(actual, DateTime.utc_now() |> DateTime.to_time()) do
-          nil
-        else
-          :past_time
-        end
+        Time.before?(actual, DateTime.utc_now() |> DateTime.to_time())
       _ ->
-        :past_time
+        false
     end
   end
 
