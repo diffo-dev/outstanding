@@ -96,8 +96,10 @@ defmodule Outstanding.FunctionTest do
   gen_result_outstanding_test("empty_map_set value result", &Outstand.empty_map_set/1, MapSet.new([:a]), :empty_map_set)
 
   gen_something_outstanding_test("explicit_nil value outstanding", &Outstand.explicit_nil/1, true)
-  gen_nothing_outstanding_test("explicit_nil realized", &Outstand.explicit_nil/1, nil)
+  gen_something_outstanding_test("explicit_nil value outstanding, regular nil", &Outstand.explicit_nil/1, nil)
+  gen_nothing_outstanding_test("explicit_nil realized", &Outstand.explicit_nil/1, :explicit_nil)
   gen_result_outstanding_test("explicit_nil value result", &Outstand.explicit_nil/1, true, :explicit_nil)
+  gen_result_outstanding_test("explicit_nil value result, regular nil", &Outstand.explicit_nil/1, nil, :explicit_nil)
 
   gen_something_outstanding_test("future_date_time value outstanding", &Outstand.future_date_time/1, ~U[2002-02-25 11:59:00.00Z])
   gen_nothing_outstanding_test("future_date_time realized", &Outstand.future_date_time/1, ~U[2102-02-25 11:59:00.00Z])

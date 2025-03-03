@@ -2,10 +2,10 @@ use Outstand
 
 defoutstanding expected :: Atom, actual :: Any do
   # nil is an atom, so needs to be handled here
-  # nil expectation always met
   case {expected, actual} do
-    {nil, _} -> nil
-    {expected, expected} -> nil
+    {nil, nil} -> nil
+    {:no_value, nil} -> nil
+    {_, ^expected} -> nil
     {_, _} -> expected
   end
 end

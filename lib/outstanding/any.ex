@@ -2,9 +2,9 @@ use Outstand
 
 defoutstanding expected :: Any, actual :: Any do
   case {expected, actual} do
-    {nil, _} ->
+    {nil, nil} ->
       nil
-    {expected, expected} ->
+    {_, ^expected} ->
       nil
     {%name{}, %name{}} ->
       expected

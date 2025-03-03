@@ -6,7 +6,10 @@ defoutstanding expected :: List, actual :: Any do
       if (expected != [] and Keyword.keyword?(expected)) do
         # keyword lists are treated like maps, in that extra elements are tolerated and outstanding is called on 'matching' elements
         Keyword.keys(expected)
-        |> Enum.filter(&(Outstanding.outstanding(expected[&1], actual[&1])))
+        |> Enum.filter(fn key ->
+          (key not in Keyword.keys(actual) and key == :no_value) or
+            Outstanding.outstanding(expected[key], actual[key]) != nil
+        end)
         |> Enum.into([], &{&1, Outstanding.outstanding(expected[&1], actual[&1])})
         |> Outstand.suppress()
       else

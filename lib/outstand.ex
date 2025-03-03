@@ -826,15 +826,17 @@ defmodule Outstand do
 
   ## Examples
   ```
-  iex> Outstand.explicit_nil(nil)
+  iex> Outstand.explicit_nil(:explicit_nil)
   nil
+  iex> Outstand.explicit_nil(nil)
+  :explicit_nil
   iex> Outstand.explicit_nil(:a)
   :explicit_nil
   ```
   """
   @spec explicit_nil(any()) :: :explicit_nil | nil
   def explicit_nil(actual) do
-    if actual == nil do
+    if actual == :explicit_nil do
       nil
     else
       :explicit_nil
@@ -950,6 +952,28 @@ defmodule Outstand do
         end
       _ ->
         :future_time
+    end
+  end
+
+   @doc """
+  Function which expects non empty keyword
+
+  ## Examples
+  ```
+  iex> Outstand.non_empty_keyword([a: :a])
+  nil
+  iex> Outstand.non_empty_keyword([])
+  :non_empty_keyword
+  iex> Outstand.non_empty_keyword(nil)
+  :non_empty_keyword
+  ```
+  """
+  @spec non_empty_keyword(any()) :: :non_empty_keyword | nil
+  def non_empty_keyword(actual) do
+    if actual != [] and Keyword.keyword?(actual) do
+      nil
+    else
+      :non_empty_keyword
     end
   end
 

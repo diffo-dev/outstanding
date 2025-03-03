@@ -59,6 +59,7 @@ Out of the box we have outstanding protocol implementations for the following ty
 | Float              | 1.1                        |                     | Float, Integer        | any_float, any_number                                                  |
 | Function           | &Outstand.non_nil_atom/1   | actual is argument  | Any                   | -                                                                      |
 | Integer            | 1                          |                     | Integer, Float, Range | any_integer, any_number                                                |
+| Keyword            | [a: :a]                    | handled by List     | (Keyword) List        | non_empty_keyword                                                      |
 | List               | [:a]                       |                     | List                  | any_list, empty_list, non_empty_list                                   |
 | MapSet             | MapSet.new([:a])           | uses difference     | MapSet                | any_map_set, empty_map_set, non_empty_map_set                          |
 | Map                | {a: :b, c: :d}             | strict              | Map                   | any_map, empty_map, non_empty_map                                      |
@@ -68,11 +69,15 @@ Out of the box we have outstanding protocol implementations for the following ty
 | Time               | ~T[11:59:00.000]           |                     | Time                  | any_time, current_time, future_time, past_time                         |
 | Tuple              | {a: :b}                    | handled by Any      | Tuple                 | any_tuple                                                              |
 
-Lists are strict in that they must be in order, so lists must have the same number of elements. Elements in the list have outstanding called on them. The entire list is returned when there is no match.
-
-MapSets are not strict in that actual may contain additional elements, however difference is used on the elements (which uses equals not outstanding).
-
 Maps call outstanding on each element is expected, but allow extra elements in actual.
+
+Keyword Lists are Lists of Tuples but are handled like Maps.
+
+Lists (other than Keyword Lists) are strict in that they must be in order, so lists must have the same number of elements. Elements in the list have outstanding called on them. The entire list is returned when there is no match.
+
+MapSets are not strict in that actual may contain additional elements, however MapSet.difference is used on the elements (which uses equals not outstanding).
+
+Tuples not part of Keywork List are matched using Any, which uses equals.
 
 Date, Time, DateTime and NaiveDateTime are supported, where Expected Function current_date matches today's date, other current times are now +/- 1 min.
 
@@ -136,6 +141,45 @@ iex> %{x: :a, y: :b} >>> %{y: :b}
 true
 iex> %{x: :a, y: :b} --- %{y: :b}
 %{x: :a}
+```
+
+## Expecting Anything or Nothing
+We've taken a nil expectation to mean that we have no expectations, so are satisified by actual anything.
+
+However we often need to expect actual nothing, say we managed something that shouldn't exist now, and we want to check for this.
+We have two alternatives for this. In the first we can expect :explicit_nil which is only satisfied with :explicit_nil:
+
+```elixir
+iex> Outstanding.outstanding(:explicit_nil, :explicit_nil)
+nil
+iex> Outstanding.outstanding(:explicit_nil, "a")
+:explicit_nil
+iex> Outstanding.outstanding(:explicit_nil, nil)
+:explicit_nil
+```
+There is a helper function &Outstand.explicit_nil/1, but it behaves identically. The disadvantage here is that actual needs to be coded with :explicit_nil, rather than nil or simply missing keys, which requires transformation of actual ahead of differencing with outstanding.
+
+Another alternative is the :no_value atom, which is only used as an expected value, where the expectation is a key-value, such as a Map or Keyword List element. It expects that there is no value, either due to there being no key, or the key having a value of nil. This can be very useful as we can avoid an actual transformation. The no_value expectation can be resolved by actual :no_value or nil.
+
+```elixir
+iex> Outstanding.outstanding(%{a: :no_value}, %{})
+nil
+iex> Outstanding.outstanding(%{a: :no_value}, %{a: nil})
+nil
+iex> Outstanding.outstanding(%{a: :no_value}, %{a: "a"})
+%{a: :no_value}
+iex> Outstanding.outstanding([a: :no_value], [])
+nil
+iex> Outstanding.outstanding([a: :no_value], [a: nil])
+nil
+iex> Outstanding.outstanding([a: :no_value], [a: "a"])
+[a: :no_value]
+iex> Outstanding.outstanding(:no_value, :no_value)
+nil
+iex> Outstanding.outstanding(:no_value, nil)
+nil
+iex> Outstanding.outstanding(:no_value, "a")
+:no_value
 ```
 
 ## Testing

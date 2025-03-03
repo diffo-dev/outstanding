@@ -5,7 +5,7 @@ defoutstanding expected :: Map, actual :: Any do
     Map ->
       Map.keys(expected)
       |> Enum.filter(fn key ->
-        not Map.has_key?(actual, key) or
+        (not Map.has_key?(actual, key) and key == :no_value) or
           Outstanding.outstanding(expected[key], actual[key]) != nil
       end)
       |> Enum.into(%{}, &{&1, Outstanding.outstanding(expected[&1], actual[&1])})

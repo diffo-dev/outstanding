@@ -16,5 +16,4 @@ defoutstanding expected :: Float, actual :: Any do
     _ ->
       expected
   end
-
 end
