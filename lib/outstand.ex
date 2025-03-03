@@ -1175,6 +1175,8 @@ defmodule Outstand do
   Integer
   iex> Outstand.type_of([:a])
   List
+  iex> Outstand.type_of([a: %{a: "a", b: "b"}])
+  List
   iex> Outstand.type_of(%{a: :a})
   Map
   iex> Outstand.type_of(MapSet.new([:a]))
@@ -1182,6 +1184,8 @@ defmodule Outstand do
   iex> Outstand.type_of(0..25//5)
   Range
   iex> Outstand.type_of({:a, :b, :c})
+  Tuple
+  iex> Outstand.type_of({:a, %{a: "a", b: "b"}})
   Tuple
   iex> Outstand.type_of(~U[2025-02-25 11:59:00.00Z])
   DateTime
@@ -1192,22 +1196,23 @@ defmodule Outstand do
   @spec type_of(any()) :: module()
   def type_of(term) do
     case term do
-      _first.._last//_step  -> Range
-      %MapSet{}             -> MapSet
-      %_{}                  -> term.__struct__
+      _first.._last//_step -> Range
+      %MapSet{}            -> MapSet
+      %_{}                 -> term.__struct__
 
       _ ->
         cond do
-          is_boolean(term)   -> Boolean
-          is_atom(term)      -> Atom
-          is_bitstring(term) -> BitString
-          is_float(term)     -> Float
-          is_function(term)  -> Function
-          is_integer(term)   -> Integer
-          is_list(term)      -> List
-          is_map(term)       -> Map
-          is_tuple(term)     -> Tuple
-          true               -> Any
+          is_boolean(term)                     -> Boolean
+          is_atom(term)                        -> Atom
+          is_bitstring(term)                   -> BitString
+          is_float(term)                       -> Float
+          is_function(term)                    -> Function
+          is_integer(term)                     -> Integer
+          #Keyword.keyword?(term) && term != [] -> Keyword |> IO.inspect(label: "type_of")
+          is_list(term)                        -> List
+          is_map(term)                         -> Map
+          is_tuple(term)                       -> Tuple
+          true                                 -> Any
         end
     end
   end

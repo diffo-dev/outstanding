@@ -1,4 +1,4 @@
-defmodule Outstanding.MapofMapTest do
+defmodule Outstanding.MapOfMapTest do
   use ExUnit.Case
   use Outstand
 
