@@ -1232,12 +1232,33 @@ defmodule Outstand do
           is_float(term)                       -> Float
           is_function(term)                    -> Function
           is_integer(term)                     -> Integer
-          #Keyword.keyword?(term) && term != [] -> Keyword |> IO.inspect(label: "type_of")
           is_list(term)                        -> List
           is_map(term)                         -> Map
           is_tuple(term)                       -> Tuple
           true                                 -> Any
         end
+    end
+  end
+
+  @doc """
+  Converts term to struct if a map
+
+  ## Examples
+  ```
+  iex> today = DateTime.utc_now() |> DateTime.to_date()
+  iex> today_map = Map.delete(today, :__struct__)
+  iex> Outstand.map_to_struct(today_map, Date)
+  ~D[2025-03-04]
+  iex> Outstand.map_to_struct(nil, Date)
+  nil
+
+  """
+  @spec map_to_struct(any() | nil, bitstring()) :: any()
+  def map_to_struct(term, name) do
+    if (is_map(term)) do
+      struct(name, term)
+    else
+      term
     end
   end
 end

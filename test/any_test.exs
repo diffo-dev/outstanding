@@ -22,6 +22,6 @@ defmodule Outstanding.AnyTest do
   gen_something_outstanding_test("value outstanding", %XY{x: @v0, y: @v1}, %XY{x: @v1, y: @v1})
   gen_nothing_outstanding_test("realized", %XY{x: @v0, y: @v1}, %XY{x: @v0, y: @v1})
   gen_nothing_outstanding_test("realized, extra item", %XYZ{x: @v0, y: @v1}, %XYZ{x: @v0, y: @v1, z: @v1})
-  gen_result_outstanding_test("key result", %XYZ{x: @v0, y: @v1}, %XYZ{x: @v0, z: @v1}, %{y: @v1})
-  gen_result_outstanding_test("value result", %XY{x: @v0, y: @v1}, %XY{x: @v1, y: @v1}, %{x: @v0})
+  gen_result_outstanding_test("key result", %XYZ{x: @v0, y: @v1}, %XYZ{x: @v0, z: @v1}, %XYZ{y: @v1})
+  gen_result_outstanding_test("value result", %XY{x: @v0, y: @v1}, %XY{x: @v1, y: @v1}, %XY{x: @v0})
 end
