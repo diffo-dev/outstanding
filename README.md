@@ -49,25 +49,25 @@ false
 
 Out of the box we have outstanding protocol implementations for the following types:
 
-| Elixir Type Module | Type Example               | Notes               | Resolving Types       | Related Expected Functions                                             |
-|--------------------|----------------------------|---------------------|-----------------------|------------------------------------------------------------------------|
-| Atom               | :a                         | nil is an Atom      | Atom                  | any_atom, non_nil_atom                                                 |
-| BitString          | "a"                        |                     | BitString             | any_string                                                             |
-| Boolean            | true                       |                     | Boolean               | any_boolean                                                            |
-| Date               | ~D[2025-02-25]             |                     | Date                  | any_date, current_date, future_date, past_date                         |
-| DateTime           | U[2025-02-25 11:59:00.00Z] |                     | DateTime              | any_date_time, current_date_time, future_date_time, past_date_time     | 
-| Float              | 1.1                        |                     | Float, Integer        | any_float, any_number                                                  |
-| Function           | &Outstand.non_nil_atom/1   | actual is argument  | Any                   | -                                                                      |
-| Integer            | 1                          |                     | Integer, Float, Range | any_integer, any_number                                                |
-| Keyword            | [a: :a]                    | handled by List     | (Keyword) List        | non_empty_keyword                                                      |
-| List               | [:a]                       |                     | List                  | any_list, empty_list, non_empty_list                                   |
-| MapSet             | MapSet.new([:a])           | uses difference     | MapSet                | any_map_set, empty_map_set, non_empty_map_set                          |
-| Map                | {a: :b, c: :d}             | strict              | Map                   | any_map, empty_map, non_empty_map                                      |
-| NaiveDateTime      | ~N[2025-02-25 11:59:00]    |                     | NaiveDateTime         | any_naive_date_time, future_time, current_time, past_time              |
-| Range              | 1                          |                     | Range, Integer        | any_range                                                              |
-| Regex              | ~r/foo/                    | actual is argument  | BitString             | -                                                                      |
-| Time               | ~T[11:59:00.000]           |                     | Time                  | any_time, current_time, future_time, past_time                         |
-| Tuple              | {a: :b}                    | handled by Any      | Tuple                 | any_tuple                                                              |
+| Elixir Type Module | Type Example               | Notes               | Resolving Types              | Related Expected Functions                                            |
+|--------------------|----------------------------|---------------------|------------------------------|-----------------------------------------------------------------------|
+| Atom               | :a                         | nil is an Atom      | Atom                         | any_atom, non_nil_atom                                                |
+| BitString          | "a"                        |                     | BitString                    | any_string                                                            |
+| Boolean            | true                       |                     | Boolean                      | any_boolean                                                           |
+| Date               | ~D[2025-02-25]             |                     | Date                         | any_date, current_date, future_date, past_date                        |
+| DateTime           | U[2025-02-25 11:59:00.00Z] |                     | DateTime                     | any_date_time, current_date_time, future_date_time, past_date_time    |
+| Float              | 1.1                        |                     | Float, Integer               | any_float, any_number                                                 |
+| Function           | &Outstand.non_nil_atom/1   | actual is argument  | Any                          | -                                                                     |
+| Integer            | 1                          |                     | Integer, Float, Range        | any_integer, any_number                                               |
+| Keyword            | [a: :a]                    | handled by List     | (Keyword) List               | non_empty_keyword                                                     |
+| List               | [:a]                       |                     | List                         | any_list, empty_list, non_empty_list                                  |
+| MapSet             | MapSet.new([:a])           | uses difference     | MapSet                       | any_map_set, empty_map_set, non_empty_map_set                         |
+| Map                | {a: :b, c: :d}             | strict              | Map                          | any_map, empty_map, non_empty_map                                     |
+| NaiveDateTime      | ~N[2025-02-25 11:59:00]    |                     | NaiveDateTime                | any_naive_date_time, future_time, current_time, past_time             |
+| Range              | 1                          |                     | Range, Integer               | any_range                                                             |
+| Regex              | ~r/foo/                    | actual is argument  | String.Chars implementations | -                                                                     |
+| Time               | ~T[11:59:00.000]           |                     | Time                         | any_time, current_time, future_time, past_time                        |
+| Tuple              | {a: :b}                    | handled by Any      | Tuple                        | any_tuple                                                             |
 
 Maps call outstanding on each element is expected, but allow extra elements in actual.
 
