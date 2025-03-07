@@ -1,4 +1,4 @@
-defmodule Outstanding.FunctionTest do
+defmodule Outstanding.ExpectedFunctionArity1Test do
   use ExUnit.Case
   use Outstand
 
