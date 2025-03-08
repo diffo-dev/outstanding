@@ -3,7 +3,7 @@ defprotocol Outstanding do
   @moduledoc """
   Protocol for comparing expected and actual, highlighting outstanding expectations unmet by actual
   """
-  @fallback_to_any true
+  @fallback_to_any false
   @type t :: Outstanding.t()
   @type result :: nil | Outstanding.t()
 
