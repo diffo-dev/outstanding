@@ -11,18 +11,18 @@ defmodule Outstanding.MixProject do
       deps: deps(),
       # ex_doc
       name: "Outstanding",
-      source_url: "https://github.com/matt-beanland/outstanding",
+      source_url: "https://github.com/diffo-dev/outstanding",
       homepage_url: "https://diffo.dev/diffo/outstanding",
       docs: [main: "readme", extras: ["README.md"]],
       # hex.pm stuff
-      description: "Outstanding (a.k.a extent expected realised by actual) Elixir protocol",
+      description: "Elixir protocol calculating outstanding from expected and actual",
       package: [
         licenses: ["MIT"],
         files: ["lib", "mix.exs", "README*", "VERSION*"],
         maintainers: ["Matt Beanland"],
         links: %{
-          "GitHub" => "https://github.com/matt-beanland/outstanding",
-          "Author's home page" => "https://diffo.dev"
+          "GitHub" => "https://github.com/diffo-dev/outstanding",
+          "Author's home page" => "https://www.diffo.dev"
         }
       ]
     ]
