@@ -1394,6 +1394,8 @@ defmodule Outstand do
   DateTime
   iex> Outstand.type_of(~D[2025-02-25])
   Date
+  iex> Outstand.type_of(self())
+  Other
   ```
   """
   @spec type_of(any()) :: module()
@@ -1414,7 +1416,7 @@ defmodule Outstand do
           is_list(term)                        -> List
           is_map(term)                         -> Map
           is_tuple(term)                       -> Tuple
-          true                                 -> Any
+          true                                 -> Other
         end
     end
   end

@@ -224,6 +224,16 @@ Once we've created a backup child we want to keep track of it, so we refine the 
 
 An application using outstanding would update expected, then do work based on what is outstanding given actual.Outstanding can be further processed (by your code) to detemine next action based on your priority of goals not met, constraints, business rules, etc. 
 
+## Acknowledgements
+
+Thanks to Ilja Tkachuk for [comparable](https://github.com/coingaming/comparable) which was an exemplar.
+
+Kudos to the [Elixir Core Team](https://elixir-lang.org/) for [elixir] https://github.com/elixir-lang/elixir 🚀
+
+## Links
+[Diffo.dev] (https://www.diffo.dev))
+[`Ash Outstanding` docs](https://hexdocs.pm/ash_outstanding).
+
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/outstanding>.
