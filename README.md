@@ -52,7 +52,7 @@ Out of the box we have outstanding protocol implementations for the following ty
 | Elixir Type Module | Type Example               | Notes               | Resolving Types              | Related Expected Functions                                            |
 |--------------------|----------------------------|---------------------|------------------------------|-----------------------------------------------------------------------|
 | Atom               | :a                         | nil is an Atom      | Atom                         | any_atom, non_nil_atom                                                |
-| BitString          | "a"                        |                     | BitString                    | any_string                                                            |
+| BitString          | "a"                        |                     | BitString                    | any_bitstring                                                         |
 | Boolean            | true                       |                     | Boolean                      | any_boolean                                                           |
 | Date               | ~D[2025-02-25]             |                     | Date                         | any_date, current_date, future_date, past_date                        |
 | DateTime           | U[2025-02-25 11:59:00.00Z] |                     | DateTime                     | any_date_time, current_date_time, future_date_time, past_date_time    |
@@ -195,9 +195,42 @@ iex> Outstanding.outstanding(:no_value, "a")
 :no_value
 ```
 
+## Implementing Outstanding for other types
+
+The defoutstanding macro can be used to implement outstanding on other types, including your own structs.
+
+This requires some though as to what it means to 'resolve' your expected struct with actual. The following XYZ struct uses Outstanding on the map to resolve :x, :y, :z, and also expects that actual is also an XYZ struct, although you may want to allow matching using straight maps or other struct with equivalent fields.
+
+```elixir
+use Outstand
+
+defmodule XYZ do
+  defstruct [:x, :y, :z]
+end
+
+defoutstanding expected :: XYZ, actual :: Any do
+  case {expected, actual} do
+    {nil, nil} ->
+      nil
+    {_, ^expected} ->
+      nil
+    {%name{}, %name{}} ->
+      expected
+      |> Map.from_struct()
+      |> Outstanding.outstanding(Map.from_struct(actual))
+      |> Outstand.map_to_struct(name)
+    {_, _} ->
+      # not an exact match so default to outstanding
+      expected
+  end
+end
+```
+
+If you are using Ash, then consider using the [ash_outstanding] (https://github.com/diffo-dev/ash_outstanding) extension which enables you to implement Outstanding protocol on your Ash Resources with a simple DSL.
+
 ## Testing
 
-`use Outstand` expression also provides 3 utilities which can auto-generate tests for implementation of `Outstanding` protocol for your types:
+`use Outstand` expression also provides 3 utilities which can auto-generate ExUnit tests for implementation of `Outstanding` protocol for your types:
 
 ```elixir
 iex>use Outstand
@@ -231,8 +264,8 @@ Thanks to Ilja Tkachuk for [comparable](https://github.com/coingaming/comparable
 Kudos to the [Elixir Core Team](https://elixir-lang.org/) for [elixir] https://github.com/elixir-lang/elixir 🚀
 
 ## Links
-[Diffo.dev] (https://www.diffo.dev))
-[`Ash Outstanding` docs](https://hexdocs.pm/ash_outstanding).
+[Diffo.dev] (https://www.diffo.dev)
+[ash_outstanding] (https://github.com/diffo-dev/ash_outstanding)
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can

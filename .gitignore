@@ -23,3 +23,5 @@ erl_crash.dump
 comparable-*.tar
 
 /.elixir_ls
+
+.DS_Store
