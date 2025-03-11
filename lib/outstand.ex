@@ -20,7 +20,9 @@ defmodule Outstand do
           gen_something_outstanding_test: 3,
           gen_result_outstanding_test: 4,
           outstanding?: 2,
+          nil_outstanding?: 2,
           outstanding?: 1,
+          nil_outstanding?: 1,
           any_atom: 1,
           any_bitstring: 1,
           any_boolean: 1,
@@ -55,7 +57,10 @@ defmodule Outstand do
           past_date_time: 1,
           past_naive_date_time: 1,
           past_time: 1,
-          suppress: 1,
+          all_of: 2,
+          any_of: 2,
+          none_of: 2,
+          one_of: 2
         ]
     end
   end
@@ -235,7 +240,27 @@ defmodule Outstand do
   end
 
   @doc """
-  Is anything oustanding given expected and actual term?
+  Checks whether a result has nothing outstanding
+
+  ## Examples
+
+  ```
+  iex> Outstand.nil_outstanding?(1)
+  false
+  iex> Outstand.nil_outstanding?(nil)
+  true
+  iex> Outstand.nil_outstanding?(%{})
+  false
+  iex> Outstand.nil_outstanding?([])
+  false
+  ```
+  """
+  def nil_outstanding?(outstanding) do
+    not outstanding?(outstanding)
+  end
+
+  @doc """
+  Is anything outstanding given expected and actual term?
 
   ## Examples
   ```
@@ -252,38 +277,22 @@ defmodule Outstand do
     outstanding?(Outstanding.outstanding(expected, actual))
   end
 
-
   @doc """
-  Suppress outstanding result when empty map or list
+  Is nothing outstanding given expected and actual term?
 
   ## Examples
-
   ```
-  iex> Outstand.suppress(%{})
-  nil
-  iex> Outstand.suppress(%{x: :a})
-  %{x: :a}
-  iex> Outstand.suppress(MapSet.new())
-  nil
-  iex> Outstand.suppress(MapSet.new([:a]))
-  MapSet.new([:a])
-  iex> Outstand.suppress([])
-  nil
-  iex> Outstand.suppress([:a])
-  [:a]
+  iex> Outstand.nil_outstanding?(1, 1)
+  true
+  iex> Outstand.nil_outstanding?(1, nil)
+  false
+  iex> Outstand.nil_outstanding?(1, 2)
+  false
   ```
   """
-  def suppress(enum) when is_map(enum) or is_list(enum) do
-    if (Enum.empty?(enum)) do
-      nil
-    else
-      enum
-    end
-  end
-
-
-  def suppress(term) when is_nil(term) do
-    nil
+  @spec nil_outstanding?(Outstanding.t, any) :: boolean()
+  def nil_outstanding?(expected, actual) do
+    not outstanding?(expected, actual)
   end
 
   @doc """
@@ -1178,6 +1187,176 @@ defmodule Outstand do
     end
   end
 
+  @spec all_of(maybe_improper_list(), any()) :: nil | :all_of
+  @doc """
+  Function which expects all elements in expected list to be resolved by an element from actual list
+
+  ## Examples
+  ```
+  iex> Outstand.all_of([1, 2, 3], [3, 1, 2])
+  nil
+  iex> Outstand.all_of([1, 2, 3], [1])
+  :all_of
+  iex> Outstand.all_of([1, 2, 3], nil)
+  :all_of
+  ```
+  """
+  def all_of(expected, actual) when is_list(expected) do
+    case is_list(actual) and Enum.all?(expected, &Outstand.nil_outstanding?(Outstand.any_of_actual_list(&1, actual))) do
+      true -> nil
+      _ -> :all_of
+    end
+  end
+
+  @spec any_of(maybe_improper_list(), any()) :: nil | :any_of
+  @doc """
+  Function which expects at least one element in expected list to be resolved by actual
+
+  ## Examples
+  ```
+  iex> Outstand.any_of([1, 2, 3], 1)
+  nil
+  iex> Outstand.any_of([1, 2, 3], 0)
+  :any_of
+  iex> Outstand.any_of([1, 2, 3], nil)
+  :any_of
+  ```
+  """
+  def any_of(expected, actual) when is_list(expected) do
+    case Enum.any?(expected, &Outstand.nil_outstanding?(&1, actual)) do
+      true -> nil
+      _ -> :any_of
+    end
+  end
+
+  @spec none_of(maybe_improper_list(), any()) :: nil | :none_of
+  @doc """
+  Function which expects no element in expected list to be resolved by actual
+
+  ## Examples
+  ```
+  iex> Outstand.none_of([1, 2, 3], 0)
+  nil
+  iex> Outstand.none_of([1, 2, 3], 1)
+  :none_of
+  iex> Outstand.none_of([1, 2, 3], nil)
+  nil
+  ```
+  """
+  def none_of(expected, actual) when is_list(expected) do
+    case Enum.count(Enum.map(expected, &Outstand.nil_outstanding?(&1, actual)), fn x -> x end) do
+      0 -> nil
+      _ -> :none_of
+    end
+  end
+
+  @spec one_of(maybe_improper_list(), any()) :: nil | :one_of
+  @doc """
+  Function which expects exactly one element in expected list to be resolved by actual
+
+  ## Examples
+  ```
+  iex> Outstand.one_of([1, 2, 3], 1)
+  nil
+  iex> Outstand.one_of([1, 1, 3], 1)
+  :one_of
+  iex> Outstand.one_of([1, 2, 3], nil)
+  :one_of
+  ```
+  """
+  def one_of(expected, actual) when is_list(expected) do
+    case Enum.count(Enum.map(expected, &Outstand.nil_outstanding?(&1, actual)), fn x -> x end) do
+      1 -> nil
+      _ -> :one_of
+    end
+  end
+
+  @spec any_of_actual_list(any(), any()) :: any()
+  @doc """
+  Function which expects at least one element from actual list to resolve expected
+
+  ## Examples
+  ```
+  iex> Outstand.any_of_actual_list(1, [1,2,3])
+  nil
+  iex> Outstand.any_of_actual_list(1, [2, 3])
+  1
+  iex> Outstand.any_of_actual_list(1, nil)
+  1
+  ```
+  """
+  def any_of_actual_list(expected, actual) do
+    case is_list(actual) && Enum.any?(actual, &Outstand.nil_outstanding?(expected, &1)) do
+      true -> nil
+      _ -> expected
+    end
+  end
+
+  @doc """
+  Converts term to struct if a map
+
+  ## Examples
+  ```
+  iex> today = DateTime.utc_now() |> DateTime.to_date()
+  iex> today_map = Map.delete(today, :__struct__)
+  iex> assert today == Outstand.map_to_struct(today_map, Date)
+  iex> Outstand.map_to_struct(nil, Date)
+  nil
+  ```
+  """
+  @spec map_to_struct(any() | nil, bitstring()) :: any()
+  def map_to_struct(term, name) do
+    if (is_map(term)) do
+      struct(name, term)
+    else
+      term
+    end
+  end
+
+  @doc """
+  Suppress outstanding result when empty list, map, map set or tuple
+
+  ## Examples
+
+  ```
+  iex> Outstand.suppress([])
+  nil
+  iex> Outstand.suppress([:a])
+  [:a]
+  iex> Outstand.suppress(%{})
+  nil
+  iex> Outstand.suppress(%{x: :a})
+  %{x: :a}
+  iex> Outstand.suppress(MapSet.new())
+  nil
+  iex> Outstand.suppress(MapSet.new([:a]))
+  MapSet.new([:a])
+  iex> Outstand.suppress({})
+  nil
+  iex> Outstand.suppress({:a})
+  {:a}
+  ```
+  """
+  def suppress(enum) when is_map(enum) or is_list(enum) do
+    if Enum.empty?(enum) do
+      nil
+    else
+      enum
+    end
+  end
+
+  def suppress(tuple) when is_tuple(tuple) do
+    if tuple_size(tuple) == 0 do
+      nil
+    else
+      tuple
+    end
+  end
+
+  def suppress(atom) when is_nil(atom) do
+    nil
+  end
+
   @doc """
   Types the argument, similar to Typable
 
@@ -1237,28 +1416,6 @@ defmodule Outstand do
           is_tuple(term)                       -> Tuple
           true                                 -> Any
         end
-    end
-  end
-
-  @doc """
-  Converts term to struct if a map
-
-  ## Examples
-  ```
-  iex> today = DateTime.utc_now() |> DateTime.to_date()
-  iex> today_map = Map.delete(today, :__struct__)
-  iex> Outstand.map_to_struct(today_map, Date)
-  ~D[2025-03-04]
-  iex> Outstand.map_to_struct(nil, Date)
-  nil
-
-  """
-  @spec map_to_struct(any() | nil, bitstring()) :: any()
-  def map_to_struct(term, name) do
-    if (is_map(term)) do
-      struct(name, term)
-    else
-      term
     end
   end
 end

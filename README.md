@@ -90,6 +90,8 @@ Of course you can easily implement the outstanding protocol for your own type (e
 ## Expected Functions
 Sometimes our expectation is a bit vague, for instance in the example above we initially did not know the id. We can supply a function as an expectation, when not met this supplies a corresponding atom.
 
+An expected function of arity 1 implicitly has actual as the argument.
+
 ```elixir
 iex> import Outstanding
 Outstanding
@@ -114,6 +116,17 @@ iex> outstanding(&Outstand.any_integer/1, nil)
     end
   end
 ```
+
+There are are number of included expected functions, see the table in Supported Types for the types they relate to.
+
+Expected functions of arity 2 are also supported. These have the form of a tuple of function and term, where term is an argument list.
+
+| Expected Function | Expected Type           | Resolving Types         | Behaviour                                                                             |
+|-------------------|-------------------------|-------------------------|---------------------------------------------------------------------------------------|
+| all_of            | List, Map, Keyword List | List, Map, Keyword List | expects all expected elements to be resolved by any actual element                    |
+| any_of            | List, Map, Keyword List | Any                     | expects at least one expected element to be resolved by actual                        |
+| none_of           | List, Map, Keyword List | List, Map, Keyword List | expects no expected elements to be resolved by any actual element                     |
+| one_of            | List, Map, Keyword List | List, Map, Keyword List | expects exactly one expected element to be resolved by any actual element             |
 
 You can supply your own functions where needed.
 
