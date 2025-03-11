@@ -18,7 +18,6 @@ defmodule Outstanding.MixProject do
       description: "Elixir protocol calculating outstanding from expected and actual",
       package: [
         name: "outstanding",
-        organization: "diffo_dev",
         licenses: ["MIT"],
         files: ["lib", "mix.exs", "README*", "VERSION*"],
         maintainers: ["Matt Beanland"],
