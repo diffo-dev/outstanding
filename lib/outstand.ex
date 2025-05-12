@@ -19,7 +19,6 @@ defmodule Outstand do
           gen_nothing_outstanding_test: 3,
           gen_something_outstanding_test: 3,
           gen_result_outstanding_test: 4,
-          outstanding?: 2,
           nil_outstanding?: 2,
           outstanding?: 1,
           nil_outstanding?: 1,
@@ -131,6 +130,10 @@ defmodule Outstand do
         def outstanding(unquote(expected_expression), unquote(actual_expression)) do
           unquote(code)
         end
+
+        def outstanding?(unquote(expected_expression), unquote(actual_expression)) do
+          outstanding?(outstanding(unquote(expected_expression), unquote(actual_expression)))
+        end
       end
     end
   end
@@ -143,7 +146,7 @@ defmodule Outstand do
         assert uq_expected --- uq_actual == nil
         assert Outstanding.outstanding(uq_expected, uq_actual) == nil
         refute uq_expected >>> uq_actual
-        refute Outstand.outstanding?(uq_expected, uq_actual)
+        refute Outstanding.outstanding?(uq_expected, uq_actual)
       end
     end
   end
@@ -156,7 +159,7 @@ defmodule Outstand do
         assert uq_expected --- uq_actual != nil
         assert Outstanding.outstanding(uq_expected, uq_actual) != nil
         assert uq_expected >>> uq_actual
-        assert Outstand.outstanding?(uq_expected, uq_actual)
+        assert Outstanding.outstanding?(uq_expected, uq_actual)
       end
     end
   end
@@ -170,7 +173,7 @@ defmodule Outstand do
         assert uq_expected --- uq_actual == uq_outstanding
         assert Outstanding.outstanding(uq_expected, uq_actual) == uq_outstanding
         assert uq_expected >>> uq_actual == Outstand.outstanding?(uq_outstanding)
-        assert Outstand.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
+        assert Outstanding.outstanding?(uq_expected, uq_actual) == Outstand.outstanding?(uq_outstanding)
       end
     end
   end
@@ -197,7 +200,7 @@ defmodule Outstand do
   end
 
   @doc """
-  Infix shortcut >>> for `Outstand.outstanding?/2`
+  Infix shortcut >>> for `Outstanding.outstanding?/2`
 
   ## Examples
 
@@ -213,7 +216,7 @@ defmodule Outstand do
   defmacro expected >>> actual do
     quote do
       unquote(expected)
-      |> Outstand.outstanding?(unquote(actual))
+      |> Outstanding.outstanding?(unquote(actual))
     end
   end
 
@@ -261,24 +264,6 @@ defmodule Outstand do
   end
 
   @doc """
-  Is anything outstanding given expected and actual term?
-
-  ## Examples
-  ```
-  iex> Outstand.outstanding?(1, 1)
-  false
-  iex> Outstand.outstanding?(1, nil)
-  true
-  iex> Outstand.outstanding?(1, 2)
-  true
-  ```
-  """
-  @spec outstanding?(Outstanding.t, any) :: boolean()
-  def outstanding?(expected, actual) do
-    outstanding?(Outstanding.outstanding(expected, actual))
-  end
-
-  @doc """
   Is nothing outstanding given expected and actual term?
 
   ## Examples
@@ -293,7 +278,7 @@ defmodule Outstand do
   """
   @spec nil_outstanding?(Outstanding.t, any) :: boolean()
   def nil_outstanding?(expected, actual) do
-    not outstanding?(expected, actual)
+    not Outstanding.outstanding?(expected, actual)
   end
 
   @doc """
