@@ -35,13 +35,13 @@ end
 
 ## Outstanding?
 
-Outstand.outstanding? simply calls Outstanding.outstanding, returning true if anything is outstanding.
+Outstanding.outstanding? simply calls Outstanding.outstanding, and is true if anything is outstanding, or false if nil outstanding.
 
 ```elixir
 iex> import Outstanding
-iex> outstanding(%{x: :a, y: :b}, %{y: :b})
+iex> outstanding?(%{x: :a, y: :b}, %{y: :b})
 true
-iex> outstanding(%{x: :a, y: :b}, %{x: :a, y: :b})
+iex> outstanding?(%{x: :a, y: :b}, %{x: :a, y: :b})
 false
 ```
 
@@ -140,10 +140,10 @@ You can supply your own functions where needed.
 `use Outstand` expression provides infix shortcuts for outstanding
 Also it provides infix shortcuts for these utilities:
 
-| Equivalent Function                       | infix shortcut          | returns                | memory aid               |
-|-------------------------------------------|-------------------------|------------------------|--------------------------|
-| Outstanding.outstanding(expected, actual) | expected --- actual     | nil or Outstanding.t() | expected less actual     |
-| Outstand.outstanding?(expected, actual)   | expected >>> actual     | boolean                | expected exceeds actual? |
+| Equivalent Function                        | infix shortcut          | returns                | memory aid               |
+|--------------------------------------------|-------------------------|------------------------|--------------------------|
+| Outstanding.outstanding(expected, actual)  | expected --- actual     | nil or Outstanding.t() | expected less actual     |
+| Outstanding.outstanding?(expected, actual) | expected >>> actual     | boolean                | expected exceeds actual? |
 
 Example of infix shortcuts usage:
 
