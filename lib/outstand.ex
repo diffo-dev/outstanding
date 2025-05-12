@@ -28,6 +28,7 @@ defmodule Outstand do
           any_boolean: 1,
           any_date: 1,
           any_date_time: 1,
+          any_duration: 1,
           any_float: 1,
           any_integer: 1,
           any_map: 1,
@@ -404,6 +405,29 @@ defmodule Outstand do
         nil
       _ ->
         :any_date_time
+    end
+  end
+
+  @doc """
+  Function which expects any duration
+
+  ## Examples
+  ```
+  iex> Outstand.any_duration(%Duration{month: 1})
+  nil
+  iex> Outstand.any_duration(%{month: 1})
+  :any_duration
+  iex> Outstand.any_duration(nil)
+  :any_duration
+  ```
+  """
+  @spec any_duration(any()) :: :any_duration | nil
+  def any_duration(actual) do
+    case actual do
+      %Duration{} ->
+        nil
+      _ ->
+        :any_duration
     end
   end
 
@@ -1268,6 +1292,124 @@ defmodule Outstand do
     case Enum.count(Enum.map(expected, &Outstand.nil_outstanding?(&1, actual)), fn x -> x end) do
       1 -> nil
       _ -> :one_of
+    end
+  end
+
+  @spec less_than(Duration.t(), any()) :: nil | :less_than
+  @doc """
+  Function which expects actual to be less than the value
+
+  ## Examples
+  ```
+  iex> Outstand.less_than(%Duration{hour: 2}, %Duration{hour: 1})
+  nil
+  iex> Outstand.less_than(%Duration{hour: 1}, %Duration{hour: 1})
+  :less_than
+  iex> Outstand.less_than(%Duration{hour: 1}, nil)
+  :less_than
+  ```
+  """
+  def less_than(expected, actual) when is_struct(expected, Duration) do
+    cond do
+      actual == nil ->
+        :less_than
+      to_timeout(actual) < to_timeout(expected) ->
+        nil
+      true ->
+        :less_than
+    end
+  end
+
+  @spec greater_than(Duration.t(), any()) :: nil | :longer_than
+  @doc """
+  Function which expects actual to be greater than the value
+
+  ## Examples
+  ```
+  iex> Outstand.greater_than(%Duration{hour: 1}, %Duration{hour: 2})
+  nil
+  iex> Outstand.greater_than(%Duration{hour: 1}, %Duration{hour: 1})
+  :greater_than
+  iex> Outstand.greater_than(%Duration{hour: 1}, nil)
+  :greater_than
+  ```
+  """
+  def greater_than(expected, actual) when is_struct(expected, Duration) do
+    cond do
+      actual == nil ->
+        :greater_than
+      to_timeout(actual) > to_timeout(expected) ->
+        nil
+      true ->
+        :greater_than
+    end
+  end
+
+  @spec bounded_by(maybe_improper_list(), any()) :: nil | :bounded_by | :error
+  @doc """
+  Function which expects actual to be bounded by the listed min and max values
+
+  ## Examples
+  ```
+  iex> Outstand.bounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{minute: 70})
+  nil
+  iex> Outstand.bounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{minute: 50})
+  :bounded_by
+  iex> Outstand.bounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{hour: 2})
+  :bounded_by
+  iex> Outstand.bounded_by([%Duration{hour: 1}, %Duration{minute: 90}], nil)
+  :bounded_by
+  ```
+  """
+  def bounded_by(expected, actual) when is_list(expected) do
+    cond do
+      actual == nil ->
+        :bounded_by
+      length(expected) != 2 ->
+        :error
+      true ->
+        min = to_timeout(hd(expected))
+        max = to_timeout(hd(tl(expected)))
+        cond do
+           to_timeout(actual) >= min and to_timeout(actual) <= max ->
+            nil
+          true ->
+            :bounded_by
+        end
+    end
+  end
+
+  @spec unbounded_by(maybe_improper_list(), any()) :: nil | :bounded_by | :error
+  @doc """
+  Function which expects actual not to be bounded by the listed min and max values
+
+  ## Examples
+  ```
+  iex> Outstand.unbounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{minute: 30})
+  nil
+  iex> Outstand.unbounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{hour: 2})
+  nil
+  iex> Outstand.unbounded_by([%Duration{hour: 1}, %Duration{minute: 90}], %Duration{minute: 70})
+  :unbounded_by
+  iex> Outstand.unbounded_by([%Duration{hour: 1}, %Duration{minute: 90}], nil)
+  :unbounded_by
+  ```
+  """
+  def unbounded_by(expected, actual) when is_list(expected) do
+    cond do
+      actual == nil ->
+        :unbounded_by
+      length(expected) != 2 ->
+        :error
+      true ->
+        min = to_timeout(hd(expected))
+        max = to_timeout(hd(tl(expected)))
+        cond do
+           to_timeout(actual) < min or to_timeout(actual) > max ->
+            nil
+          true ->
+            :unbounded_by
+        end
     end
   end
 

@@ -23,6 +23,10 @@ defmodule Outstanding.ExpectedFunctionArity1Test do
   gen_nothing_outstanding_test("any_date_time realized", &Outstand.any_date_time/1, ~U[2025-02-25 11:59:00.00Z])
   gen_result_outstanding_test("any_date_time value result", &Outstand.any_date_time/1, "2025-02-25", :any_date_time)
 
+  gen_something_outstanding_test("any_duration value outstanding", &Outstand.any_duration/1, %{minute: 60})
+  gen_nothing_outstanding_test("any_duration realized", &Outstand.any_duration/1, %Duration{minute: 60})
+  gen_result_outstanding_test("any_duration value result", &Outstand.any_duration/1, %{minute: 60}, :any_duration)
+
   gen_something_outstanding_test("any_float value outstanding", &Outstand.any_float/1, 1)
   gen_nothing_outstanding_test("any_float realized", &Outstand.any_float/1, 1.1)
   gen_result_outstanding_test("any_float value result", &Outstand.any_float/1, 1, :any_float)
