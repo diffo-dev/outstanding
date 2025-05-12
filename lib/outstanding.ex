@@ -12,4 +12,10 @@ defprotocol Outstanding do
   """
   @spec outstanding(t, any()) :: result
   def outstanding(expected, actual)
+
+  @doc """
+  Is anything outstanding?
+  """
+  @spec outstanding?(t, any()) :: boolean()
+  def outstanding?(expected, actual)
 end
