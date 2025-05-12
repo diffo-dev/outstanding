@@ -28,10 +28,16 @@ by adding `outstanding` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:outstanding, "~> 0.1.0"}
+    {:outstanding, "~> 0.2.0"}
   ]
 end
 ```
+
+## Tutorial
+
+To get started you need a running instance of [Livebook](https://livebook.dev/)
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fdiffo-dev%2Foutstanding%2Fblob%2Fdev%2Foutstanding.livemd)
 
 ## Outstanding?
 
@@ -273,5 +279,5 @@ Kudos to the [Elixir Core Team](https://elixir-lang.org/) for [elixir](https://g
 
 [ash_outstanding](https://github.com/diffo-dev/ash_outstanding)
 
-[documentation](<https://hexdocs.pm/outstanding>)
+[documentation](<https://hexdocs.pm/outstanding/readme.html>)
 

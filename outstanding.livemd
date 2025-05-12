@@ -1,0 +1,312 @@
+# Outstanding Elixir Protocol
+
+```elixir
+Mix.install([{:outstanding, "~> 0.2.0"}], consolidate_protocols: false)
+```
+
+## Overview
+
+In this livebook tutorial you will learn
+
+* Why Outstanding?
+* What Outstanding does?
+* How to use Outstanding Protocol
+* How to implement Outstanding for your Types And Structs
+* How to use Outstand Expected Functions
+* How to create Expected Functions
+
+## Why Outstanding?
+
+Outstanding is a protocol for checking whether our expectations have been met or exceeded, and/or seeing which expectations are still outstanding.
+
+## What Outstanding does?
+
+Outstanding defines an Elixir protocol for comparing expected and actual, where these can be of any type.
+
+Outstanding protocol defines two functions:
+
+* outstanding?(expected, actual), returning a boolean which is true if anything is outstanding, otherwise false
+* outstanding(expected, actual), returning what is outstanding, otherwise nil
+
+### Outstanding.outstanding?(expected, actual)
+
+Try out the ```outstanding?``` function with different arguments, and with nil for expected or actual.
+
+Outstanding.outstanding?(:thing, :thing) is false, since expected :thing is resolved by the actual :thing and nothing is outstanding
+
+```elixir
+Outstand.outstanding?(:thing, :thing)
+```
+
+Outstanding?(nil, :anything) is always false, as nil expectations are always met, so there is nothing outstanding
+Outstanding?(:anything, nil) is always true, as nil cannot meet the :anything expectation.
+
+### Outstanding.outstanding(expected, actual)
+
+Try out the ```outstanding``` function with different arguments, and with nil for expected or actual.
+
+Outstanding(:thing, :other_thing) is :thing, since, since expected :thing is not resolved by the actual :other-thing, so expected :thing is outstanding
+
+```elixir
+Outstanding.outstanding(:thing, :other_thing)
+```
+
+## How to use Outstanding Protocol
+
+### Outstanding Map
+
+Outstanding is implemented for Map, which is where is gets more useful, as if actual is also a map, we call Outstanding value in the expected map, using the corresponding value if any from the actual map.
+This allows actual to have additional keys/values and still potentially resolve expected, resulting in nil outstanding.
+
+We expect a mapped service to be active, however it is currently inactive.
+
+```elixir
+Outstanding.outstanding(%{state: :active, status: :working}, 
+  %{id: 1, state: :inactive, status: :idle})
+```
+
+Try and resolve outstanding by setting actual ```state: active```
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+  ```elixir
+  Outstanding.outstanding(%{state: :active, status: working}, 
+    %{id: 1, state: :active, status: :idle})
+  ```
+
+  Which should evaluate to
+  ```elixir
+  %{status: :working}
+  ```
+
+  </div>
+</details>
+
+Then start the actual service so that it has 'status: working'
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+  ```elixir
+  Outstanding.outstanding(%{state: :active, status: working}, 
+    %{id: 1, state: :active, status: :working})
+  ```
+
+  Which should evaluate to
+  ```elixir
+  nil
+  ```
+
+  </div>
+</details>
+
+Try expecting an access 'child' service with ```access: %{status: working}```, with an actual access 'child, which has an actual ```:access``` value of ```%{id: 3, state: :active, status: :degraded}```.
+What remains outstanding?
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+  ```elixir
+  Outstanding.outstanding(%{state: :active, status: :working, access: %{status: :working}}, 
+    %{id: 1, state: :active, status: :working, access: %{id: 3, state: :active, status: :degraded}})
+  ```
+
+  Which should evaluate to
+  ```elixir
+  %{access: %{status: :working}}
+  ```
+
+  </div>
+</details>
+
+## How to implement Outstanding for your Types And Structs
+
+You can implement outstanding for any Type or Struct using the Outstand defoutstanding macro. 
+Expected is of whatever type you are implementing the protocol for, and actual must be of Any type.
+
+### Outstanding Types
+
+The following is the Outstanding implementation for Regex, which expects actual to match the (evaluated) regex. 
+We won't evaluate this as it is already defined.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+use Outstand
+
+defoutstanding expected :: Regex, actual :: Any do
+  case Regex.match?(expected, String.Chars.to_string(actual)) do
+    true -> nil
+    false -> expected
+  end
+end
+```
+
+Additionally macros are provided to allow you to easily test your outstanding implementation.
+
+```elixir
+ExUnit.start()
+defmodule Outstanding.RegexTest do
+  use ExUnit.Case
+  use Outstand
+
+  gen_something_outstanding_test("value outstanding", ~r/foo/, "bar")
+  gen_nothing_outstanding_test("realized", ~r/foo/, "foo")
+  gen_nothing_outstanding_test("realized, match within string", ~r/foo/, "barfoobar")
+  gen_nothing_outstanding_test("realized, match within String.Chars implementation", ~r/foo/, :barfoobar)
+  gen_result_outstanding_test("value result", ~r/foo/, "bar", ~r/foo/)
+end
+```
+
+These tests can be executed
+
+```elixir
+ExUnit.run()
+```
+
+### Outstanding Structs
+
+When implementing Outstanding for a struct, you need to think about what fields you wish to run outstanding on, 
+what your expectation is for each field, and whether you require actual to have the same struct name, or even be a struct at all.
+
+Given the struct
+
+```elixir
+  defmodule Service do
+    defstruct [:id, :state, :status, :access]
+  end
+```
+
+Try writing defoutstanding for yourself, requiring actual to also be a service struct, and to perform outstanding on all fields except id.
+
+```elixir
+use Outstand
+
+defoutstanding expected :: Service, actual :: Any do
+  case {expected, actual} do
+    {nil, nil} ->
+        nil
+    {_, ^expected} ->
+        nil
+    {%name{}, %name{}} ->
+        expected
+        # your code here
+
+
+      
+        |> Outstand.map_to_struct(name)
+    {_, _} ->
+    # not an exact match so default to outstanding
+        expected
+  end
+end
+```
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+    ```elixir
+    defoutstanding expected :: Service, actual :: Any do
+        case {expected, actual} do
+            {nil, nil} ->
+                nil
+            {_, ^expected} ->
+                nil
+            {%name{}, %name{}} ->
+                expected
+                |> Map.from_struct()
+                |> Map.delete(:id)
+                |> Outstanding.outstanding(Map.from_struct(actual))
+                |> Outstand.map_to_struct(name)
+            {_, _} ->
+            # not an exact match so default to outstanding
+                expected
+        end
+    end
+    ```
+
+  </div>
+</details>
+
+```elixir
+ExUnit.start()
+
+defmodule Outstanding.ServiceTest do
+  use ExUnit.Case
+  use Outstand
+
+  gen_something_outstanding_test("service state outstanding", %Service{state: :active}, %Service{state: :inactive})
+  gen_nothing_outstanding_test("service state realised", %Service{state: :active}, %Service{state: :active})
+  gen_result_outstanding_test("service state outstanding result", %Service{state: :active}, %Service{state: :inactive}, %Service{state: :active})
+end
+
+ExUnit.run()
+```
+
+## How to use Outstand Expected Functions
+
+Outstand also has a number of arity/1 and arity/2 expected functions. Arity/1 functions simply work on the actual value, whereas arity/2 functions take a expected argument list and actual.
+
+By convention Outstanding returns an atom with the function name if anything is outstanding.
+
+We can use the expected function &any_of/2 for the value of state
+
+```elixir
+Outstanding.outstanding({&Outstand.any_of/2, [:active, :inactive, :suspended]},
+  :cancelled)
+```
+
+## How to create Expected Functions
+
+You can easily create your own expected functions, they simply need to return nil or outstanding after evaluating their expected argument list and actual.
+
+Try creating an expected function ```non_terminal_state``` which expects the value to be any of [:active, :inactive, :suspended]
+
+```elixir
+defmodule ExpectedFunction do
+    def non_terminal_state(actual) do
+       # your code here
+    end
+end
+```
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+    ```elixir
+    defmodule ExpectedFunction do
+        def non_terminal_state(actual) do
+            if (actual in [:active, :inactive, :suspended]) do
+                nil
+            else
+                :non_terminal_state
+            end
+        end
+    end
+    ```
+
+  </div>
+</details>
+
+```elixir
+ExUnit.start()
+
+defmodule Outstanding.ExpectedFunctionTest do
+  use ExUnit.Case
+  use Outstand
+
+  gen_something_outstanding_test("non_terminal_state value outstanding", &ExpectedFunction.non_terminal_state/1, :cancelled)
+  gen_nothing_outstanding_test("non_terminal_state :active realized", &ExpectedFunction.non_terminal_state/1, :active)
+  gen_nothing_outstanding_test("non_terminal_state :inactive realized", &ExpectedFunction.non_terminal_state/1, :inactive)
+  gen_nothing_outstanding_test("non_terminal_state :suspended realized", &ExpectedFunction.non_terminal_state/1, :suspended)
+  gen_result_outstanding_test("non_terminal_state value result", &ExpectedFunction.non_terminal_state/1, :cancelled, :non_terminal_state)
+end
+
+ExUnit.run()
+```
