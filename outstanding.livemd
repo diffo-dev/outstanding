@@ -35,7 +35,7 @@ Try out the ```outstanding?``` function with different arguments, and with nil f
 Outstanding.outstanding?(:thing, :thing) is false, since expected :thing is resolved by the actual :thing and nothing is outstanding
 
 ```elixir
-Outstand.outstanding?(:thing, :thing)
+Outstanding.outstanding?(:thing, :thing)
 ```
 
 Outstanding?(nil, :anything) is always false, as nil expectations are always met, so there is nothing outstanding
