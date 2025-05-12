@@ -56,6 +56,7 @@ Out of the box we have outstanding protocol implementations for the following ty
 | Boolean            | true                       |                     | Boolean                      | any_boolean                                                           |
 | Date               | ~D[2025-02-25]             |                     | Date                         | any_date, current_date, future_date, past_date                        |
 | DateTime           | U[2025-02-25 11:59:00.00Z] |                     | DateTime                     | any_date_time, current_date_time, future_date_time, past_date_time    |
+| Duration           | %Duration{minute: 60}      |                     | Duration                     | any_duration                                                          |
 | Float              | 1.1                        |                     | Float, Integer               | any_float, any_number                                                 |
 | Function           | &Outstand.non_nil_atom/1   | actual is argument  | Any                          | -                                                                     |
 | Integer            | 1                          |                     | Integer, Float, Range        | any_integer, any_number                                               |
@@ -119,7 +120,7 @@ iex> outstanding(&Outstand.any_integer/1, nil)
 
 There are are number of included expected functions, see the table in Supported Types for the types they relate to.
 
-Expected functions of arity 2 are also supported. These have the form of a tuple of function and term, where term is an argument list.
+Expected functions of arity 2 are also supported. These have the form of a tuple of function and term, where term is an argument or argument list.
 
 | Expected Function | Expected Type           | Resolving Types         | Behaviour                                                                             |
 |-------------------|-------------------------|-------------------------|---------------------------------------------------------------------------------------|
@@ -127,6 +128,10 @@ Expected functions of arity 2 are also supported. These have the form of a tuple
 | any_of            | List, Map, Keyword List | Any                     | expects at least one expected element to be resolved by actual                        |
 | none_of           | List, Map, Keyword List | List, Map, Keyword List | expects no expected elements to be resolved by any actual element                     |
 | one_of            | List, Map, Keyword List | List, Map, Keyword List | expects exactly one expected element to be resolved by any actual element             |
+| less_than         | Duration                | Duration                | expects actual to be less than value                                                  |
+| greater_than      | Duration                | Duration                | expects actual to be greater than value                                               |
+| bounded_by        | Duration                | Duration                | expects actual to be bounded by [min_value, max_value]                                |
+| unbounded_by      | Duration                | Duration                | expects actual to be not bounded by [min_value, max_value]                            |
 
 You can supply your own functions where needed.
 
@@ -226,7 +231,7 @@ defoutstanding expected :: XYZ, actual :: Any do
 end
 ```
 
-If you are using Ash, then consider using the [ash_outstanding] (https://github.com/diffo-dev/ash_outstanding) extension which enables you to implement Outstanding protocol on your Ash Resources with a simple DSL.
+If you are using Ash, then consider using the [ash_outstanding](https://github.com/diffo-dev/ash_outstanding) extension which enables you to implement Outstanding protocol on your Ash Resources with a simple DSL.
 
 ## Testing
 
@@ -261,13 +266,12 @@ An application using outstanding would update expected, then do work based on wh
 
 Thanks to Ilja Tkachuk for [comparable](https://github.com/coingaming/comparable) which was an exemplar.
 
-Kudos to the [Elixir Core Team](https://elixir-lang.org/) for [elixir] https://github.com/elixir-lang/elixir 🚀
+Kudos to the [Elixir Core Team](https://elixir-lang.org/) for [elixir](https://github.com/elixir-lang/elixir) 🚀
 
 ## Links
-[Diffo.dev] (https://www.diffo.dev)
-[ash_outstanding] (https://github.com/diffo-dev/ash_outstanding)
+[Diffo.dev](https://www.diffo.dev)
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/outstanding>.
+[ash_outstanding](https://github.com/diffo-dev/ash_outstanding)
+
+[documentation](<https://hexdocs.pm/outstanding>)
 
