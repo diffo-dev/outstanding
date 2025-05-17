@@ -77,11 +77,28 @@ defmodule Outstanding.ExpectedFunctionArity1Test do
 
   gen_something_outstanding_test("current_date_time value outstanding", &Outstand.current_date_time/1, ~U[2002-02-25 11:59:00.00Z])
   gen_nothing_outstanding_test("current_date_time realized", &Outstand.current_date_time/1, DateTime.utc_now())
-  gen_result_outstanding_test("current_date_time value result", &Outstand.current_date_time/1, "~U[2002-02-25 11:59:00.00Z]", :current_date_time)
+
+  gen_result_outstanding_test(
+    "current_date_time value result",
+    &Outstand.current_date_time/1,
+    "~U[2002-02-25 11:59:00.00Z]",
+    :current_date_time
+  )
 
   gen_something_outstanding_test("current_naive_date_time value outstanding", &Outstand.current_naive_date_time/1, ~N[2002-02-25 11:59:00])
-  gen_nothing_outstanding_test("current_naive_date_time realized", &Outstand.current_naive_date_time/1, DateTime.utc_now() |> DateTime.to_naive())
-  gen_result_outstanding_test("current_naive_date_time value result", &Outstand.current_naive_date_time/1, "~N[2002-02-25 11:59:00]", :current_naive_date_time)
+
+  gen_nothing_outstanding_test(
+    "current_naive_date_time realized",
+    &Outstand.current_naive_date_time/1,
+    DateTime.utc_now() |> DateTime.to_naive()
+  )
+
+  gen_result_outstanding_test(
+    "current_naive_date_time value result",
+    &Outstand.current_naive_date_time/1,
+    "~N[2002-02-25 11:59:00]",
+    :current_naive_date_time
+  )
 
   gen_something_outstanding_test("current_time value outstanding", &Outstand.current_time/1, ~T[11:59:00.000])
   gen_nothing_outstanding_test("current_time realized", &Outstand.current_time/1, DateTime.utc_now() |> DateTime.to_time())
@@ -107,11 +124,23 @@ defmodule Outstanding.ExpectedFunctionArity1Test do
 
   gen_something_outstanding_test("future_date_time value outstanding", &Outstand.future_date_time/1, ~U[2002-02-25 11:59:00.00Z])
   gen_nothing_outstanding_test("future_date_time realized", &Outstand.future_date_time/1, ~U[2102-02-25 11:59:00.00Z])
-  gen_result_outstanding_test("future_date_time value result", &Outstand.future_date_time/1, "~U[2002-02-25 11:59:00.00Z]", :future_date_time)
+
+  gen_result_outstanding_test(
+    "future_date_time value result",
+    &Outstand.future_date_time/1,
+    "~U[2002-02-25 11:59:00.00Z]",
+    :future_date_time
+  )
 
   gen_something_outstanding_test("future_naive_date_time value outstanding", &Outstand.future_naive_date_time/1, ~N[2002-02-25 11:59:00])
   gen_nothing_outstanding_test("future_naive_date_time realized", &Outstand.future_naive_date_time/1, ~N[2102-02-25 11:59:00])
-  gen_result_outstanding_test("future_naive_date_time value result", &Outstand.future_naive_date_time/1, "~N[2002-02-25 11:59:00]", :future_naive_date_time)
+
+  gen_result_outstanding_test(
+    "future_naive_date_time value result",
+    &Outstand.future_naive_date_time/1,
+    "~N[2002-02-25 11:59:00]",
+    :future_naive_date_time
+  )
 
   gen_something_outstanding_test("future_time value outstanding", &Outstand.future_time/1, ~T[00:00:00.000])
   gen_nothing_outstanding_test("future_time realized", &Outstand.future_time/1, ~T[23:59:59.999])
@@ -135,7 +164,13 @@ defmodule Outstanding.ExpectedFunctionArity1Test do
 
   gen_something_outstanding_test("past_naive_date_time value outstanding", &Outstand.past_naive_date_time/1, ~N[2102-02-25 11:59:00])
   gen_nothing_outstanding_test("past_naive_date_time realized", &Outstand.past_naive_date_time/1, ~N[2002-02-25 11:59:00])
-  gen_result_outstanding_test("past_naive_date_time value result", &Outstand.past_naive_date_time/1, "~N[2102-02-25 11:59:00]", :past_naive_date_time)
+
+  gen_result_outstanding_test(
+    "past_naive_date_time value result",
+    &Outstand.past_naive_date_time/1,
+    "~N[2102-02-25 11:59:00]",
+    :past_naive_date_time
+  )
 
   gen_something_outstanding_test("past_time value outstanding", &Outstand.past_time/1, ~T[23:59:59.999])
   gen_nothing_outstanding_test("past_time realized", &Outstand.past_time/1, ~T[00:00:00.000])

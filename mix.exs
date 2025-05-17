@@ -1,31 +1,43 @@
 defmodule Outstanding.MixProject do
   use Mix.Project
 
-  def project do
+  @name :outstanding
+  @version "0.2.1"
+  @description "Elixir protocol calculating outstanding from expected and actual"
+  @github_url "https://github.com/diffo-dev/outstanding"
+
+  def project() do
     [
-      app: :outstanding,
-      version: "0.2.0",
+      app: @name,
+      version: @version,
+      name: @name,
+      description: @description,
       elixir: "~> 1.18",
       consolidate_protocols: Mix.env() != :test,
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
+      package: package(),
       # ex_doc
-      name: "Outstanding",
-      source_url: "https://github.com/diffo-dev/outstanding",
+      source_url: @github_url,
       homepage_url: "https://diffo.dev/diffo/outstanding",
-      docs: [main: "readme", extras: ["README.md"]],
+      elixirc_paths: elixirc_paths(Mix.env()),
       # hex.pm stuff
-      description: "Elixir protocol calculating outstanding from expected and actual",
-      package: [
-        name: "outstanding",
-        licenses: ["MIT"],
-        files: ["lib", "mix.exs", "README*", "VERSION*"],
-        maintainers: ["Matt Beanland"],
-        links: %{
-          "GitHub" => "https://github.com/diffo-dev/outstanding",
-          "Author's home page" => "https://www.diffo.dev"
-        }
-      ]
+      deps: deps(),
+      docs: &docs/0
+    ]
+  end
+
+  defp elixirc_paths(_), do: ["lib"]
+
+  defp package do
+    [
+      name: @name,
+      licenses: ["MIT"],
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE*
+      CHANGELOG* documentation),
+      links: %{
+        "GitHub" => @github_url,
+        "Author's home page" => "https://www.diffo.dev"
+      }
     ]
   end
 
@@ -39,7 +51,25 @@ defmodule Outstanding.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.37", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.37", only: :dev, runtime: false},
+      {:ex_check, "~> 0.12", only: [:dev, :test]},
+      {:git_ops, "~> 2.7", only: [:dev], runtime: false},
+      {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  def docs() do
+    [
+      homepage_url: @github_url,
+      source_url: @github_url,
+      source_ref: "v#{@version}",
+      main: "readme",
+      logo: "logos/diffo.jpg",
+      extras: [
+        "README.md": [title: "Guide"],
+        "LICENSE.md": [title: "License"]
+      ]
     ]
   end
 end

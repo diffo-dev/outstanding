@@ -40,10 +40,12 @@ defoutstanding expected :: List, actual :: Any do
         # expected longer than actual, cannot resolve outstanding
         true ->
           padded_actual = actual ++ List.duplicate(nil, Enum.count(expected) - Enum.count(actual))
+
           expected
           |> Enum.zip(padded_actual)
           |> Enum.map(&Outstanding.outstanding(elem(&1, 0), elem(&1, 1)))
       end
+
     _ ->
       expected
   end

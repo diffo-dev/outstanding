@@ -7,6 +7,7 @@ defoutstanding expected :: Time, actual :: Any do
     case Time.compare(expected, actual) do
       :eq ->
         nil
+
       _ ->
         expected
     end

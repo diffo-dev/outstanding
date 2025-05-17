@@ -2,7 +2,6 @@ defmodule Outstanding.ListTest do
   use ExUnit.Case
   use Outstand
 
-
   gen_something_outstanding_test("element outstanding", [:a, :b], [:b, :c])
   gen_something_outstanding_test("order outstanding", [:a, :b], [:b, :a])
   gen_something_outstanding_test("empty outstanding", [], [:a])

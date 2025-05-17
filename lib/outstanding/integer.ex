@@ -7,18 +7,21 @@ defoutstanding expected :: Integer, actual :: Any do
         ^expected -> nil
         _ -> expected
       end
+
     Float ->
-      if (expected == actual) do
+      if expected == actual do
         nil
       else
         expected
       end
+
     Range ->
-      if (expected in actual) do
+      if expected in actual do
         nil
       else
         expected
       end
+
     _ ->
       expected
   end

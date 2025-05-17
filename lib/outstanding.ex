@@ -1,5 +1,4 @@
 defprotocol Outstanding do
-
   @moduledoc """
   Protocol for comparing expected and actual, highlighting outstanding expectations unmet by actual
   """

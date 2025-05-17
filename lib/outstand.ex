@@ -276,7 +276,7 @@ defmodule Outstand do
   false
   ```
   """
-  @spec nil_outstanding?(Outstanding.t, any) :: boolean()
+  @spec nil_outstanding?(Outstanding.t(), any) :: boolean()
   def nil_outstanding?(expected, actual) do
     not Outstanding.outstanding?(expected, actual)
   end
@@ -365,6 +365,7 @@ defmodule Outstand do
     case actual do
       %Date{} ->
         nil
+
       _ ->
         :any_date
     end
@@ -388,6 +389,7 @@ defmodule Outstand do
     case actual do
       %DateTime{} ->
         nil
+
       _ ->
         :any_date_time
     end
@@ -411,6 +413,7 @@ defmodule Outstand do
     case actual do
       %Duration{} ->
         nil
+
       _ ->
         :any_duration
     end
@@ -434,6 +437,7 @@ defmodule Outstand do
     case actual do
       %NaiveDateTime{} ->
         nil
+
       _ ->
         :any_naive_date_time
     end
@@ -457,6 +461,7 @@ defmodule Outstand do
     case actual do
       %Time{} ->
         nil
+
       _ ->
         :any_time
     end
@@ -572,6 +577,7 @@ defmodule Outstand do
     case actual do
       %MapSet{} ->
         nil
+
       _ ->
         :any_map_set
     end
@@ -617,6 +623,7 @@ defmodule Outstand do
     case actual do
       _first.._last//_step ->
         nil
+
       _ ->
         :any_range
     end
@@ -667,9 +674,11 @@ defmodule Outstand do
         case Date.compare(actual, DateTime.utc_now() |> DateTime.to_date()) do
           :eq ->
             nil
+
           _ ->
             :current_date
         end
+
       _ ->
         :current_date
     end
@@ -696,11 +705,12 @@ defmodule Outstand do
     case actual do
       %DateTime{} ->
         if DateTime.after?(actual, DateTime.utc_now() |> DateTime.add(-1, :minute)) &&
-          DateTime.before?(actual, DateTime.utc_now() |> DateTime.add(1, :minute)) do
+             DateTime.before?(actual, DateTime.utc_now() |> DateTime.add(1, :minute)) do
           nil
         else
           :current_date_time
         end
+
       _ ->
         :current_date_time
     end
@@ -727,11 +737,12 @@ defmodule Outstand do
     case actual do
       %NaiveDateTime{} ->
         if NaiveDateTime.after?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(-1, :minute)) &&
-          NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(1, :minute)) do
+             NaiveDateTime.before?(actual, DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.add(1, :minute)) do
           nil
         else
           :current_naive_date_time
         end
+
       _ ->
         :current_naive_date_time
     end
@@ -758,11 +769,12 @@ defmodule Outstand do
     case actual do
       %Time{} ->
         if Time.after?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(-1, :minute)) &&
-          Time.before?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(1, :minute)) do
+             Time.before?(actual, DateTime.utc_now() |> DateTime.to_time() |> Time.add(1, :minute)) do
           nil
         else
           :current_time
         end
+
       _ ->
         :current_time
     end
@@ -834,6 +846,7 @@ defmodule Outstand do
         else
           :empty_map_set
         end
+
       _ ->
         :empty_map_set
     end
@@ -884,6 +897,7 @@ defmodule Outstand do
         else
           :future_date
         end
+
       _ ->
         :future_date
     end
@@ -912,6 +926,7 @@ defmodule Outstand do
         else
           :future_date_time
         end
+
       _ ->
         :future_date_time
     end
@@ -940,6 +955,7 @@ defmodule Outstand do
         else
           :future_naive_date_time
         end
+
       _ ->
         :future_naive_date_time
     end
@@ -968,12 +984,13 @@ defmodule Outstand do
         else
           :future_time
         end
+
       _ ->
         :future_time
     end
   end
 
-   @doc """
+  @doc """
   Function which expects non empty keyword
 
   ## Examples
@@ -1061,6 +1078,7 @@ defmodule Outstand do
         else
           :non_empty_map_set
         end
+
       _ ->
         :non_empty_map_set
     end
@@ -1110,6 +1128,7 @@ defmodule Outstand do
         else
           :past_date
         end
+
       _ ->
         :past_date
     end
@@ -1137,6 +1156,7 @@ defmodule Outstand do
         else
           :past_date_time
         end
+
       _ ->
         :past_date_time
     end
@@ -1164,6 +1184,7 @@ defmodule Outstand do
         else
           :past_naive_date_time
         end
+
       _ ->
         :past_naive_date_time
     end
@@ -1191,6 +1212,7 @@ defmodule Outstand do
         else
           :past_time
         end
+
       _ ->
         :past_time
     end
@@ -1298,10 +1320,12 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :less_than
-      to_timeout(actual) < to_timeout(expected) ->
-        nil
       true ->
-        :less_than
+        now = DateTime.utc_now()
+        case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
+          :lt -> nil
+          _ -> :less_than
+        end
     end
   end
 
@@ -1323,10 +1347,12 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :greater_than
-      to_timeout(actual) > to_timeout(expected) ->
-        nil
       true ->
-        :greater_than
+        now = DateTime.utc_now()
+        case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
+          :gt -> nil
+          _ -> :greater_than
+        end
     end
   end
 
@@ -1350,16 +1376,22 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :bounded_by
+
       length(expected) != 2 ->
         :error
+
       true ->
-        min = to_timeout(hd(expected))
-        max = to_timeout(hd(tl(expected)))
+        now = DateTime.utc_now()
+        min = DateTime.shift(now, hd(expected))
+        max = DateTime.shift(now, hd(tl(expected)))
+        shifted = DateTime.shift(now, actual)
+
         cond do
-           to_timeout(actual) >= min and to_timeout(actual) <= max ->
-            nil
-          true ->
+          DateTime.before?(shifted, min) or DateTime.after?(shifted, max) ->
             :bounded_by
+
+          true ->
+            :nil
         end
     end
   end
@@ -1384,14 +1416,20 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :unbounded_by
+
       length(expected) != 2 ->
         :error
+
       true ->
-        min = to_timeout(hd(expected))
-        max = to_timeout(hd(tl(expected)))
+        now = DateTime.utc_now()
+        min = DateTime.shift(now, hd(expected))
+        max = DateTime.shift(now, hd(tl(expected)))
+        shifted = DateTime.shift(now, actual)
+
         cond do
-           to_timeout(actual) < min or to_timeout(actual) > max ->
-            nil
+          DateTime.before?(shifted, min) or DateTime.after?(shifted, max) ->
+            :nil
+
           true ->
             :unbounded_by
         end
@@ -1433,7 +1471,7 @@ defmodule Outstand do
   """
   @spec map_to_struct(any() | nil, bitstring()) :: any()
   def map_to_struct(term, name) do
-    if (is_map(term)) do
+    if is_map(term) do
       struct(name, term)
     else
       term
@@ -1476,6 +1514,7 @@ defmodule Outstand do
 
   def suppress(list) when is_list(list) do
     nils_removed = Enum.reject(list, &is_nil(&1))
+
     if Enum.empty?(nils_removed) do
       nil
     else
@@ -1539,22 +1578,27 @@ defmodule Outstand do
   @spec type_of(any()) :: module()
   def type_of(term) do
     case term do
-      _first.._last//_step -> Range
-      %MapSet{}            -> MapSet
-      %_{}                 -> term.__struct__
+      _first.._last//_step ->
+        Range
+
+      %MapSet{} ->
+        MapSet
+
+      %_{} ->
+        term.__struct__
 
       _ ->
         cond do
-          is_boolean(term)                     -> Boolean
-          is_atom(term)                        -> Atom
-          is_bitstring(term)                   -> BitString
-          is_float(term)                       -> Float
-          is_function(term)                    -> Function
-          is_integer(term)                     -> Integer
-          is_list(term)                        -> List
-          is_map(term)                         -> Map
-          is_tuple(term)                       -> Tuple
-          true                                 -> Other
+          is_boolean(term) -> Boolean
+          is_atom(term) -> Atom
+          is_bitstring(term) -> BitString
+          is_float(term) -> Float
+          is_function(term) -> Function
+          is_integer(term) -> Integer
+          is_list(term) -> List
+          is_map(term) -> Map
+          is_tuple(term) -> Tuple
+          true -> Other
         end
     end
   end

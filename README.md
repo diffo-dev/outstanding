@@ -28,7 +28,7 @@ by adding `outstanding` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:outstanding, "~> 0.2.0"}
+    {:outstanding, "~> 0.3.0"}
   ]
 end
 ```
@@ -141,15 +141,13 @@ Expected functions of arity 2 are also supported. These have the form of a tuple
 
 You can supply your own functions where needed.
 
-## Infix Shortcuts
+### Exceeds and Difference Operators
 
-`use Outstand` expression provides infix shortcuts for outstanding
-Also it provides infix shortcuts for these utilities:
+For convenient use in expressions we've implemented operators.
 
-| Equivalent Function                        | infix shortcut          | returns                | memory aid               |
-|--------------------------------------------|-------------------------|------------------------|--------------------------|
-| Outstanding.outstanding(expected, actual)  | expected --- actual     | nil or Outstanding.t() | expected less actual     |
-| Outstanding.outstanding?(expected, actual) | expected >>> actual     | boolean                | expected exceeds actual? |
+The 'exceeds' operator tells us whether our expectations exceed our actual. ```expected >>> actual``` is equivalent to ```Outstanding.outstanding?(expected, actual)```
+
+The 'difference' operator tells us what expectations remain unmet. ```expected --- actual``` is equivalent to ```Outstanding.outstanding(expected, actual)```
 
 Example of infix shortcuts usage:
 

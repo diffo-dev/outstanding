@@ -7,6 +7,7 @@ defoutstanding expected :: NaiveDateTime, actual :: Any do
     case NaiveDateTime.compare(expected, actual) do
       :eq ->
         nil
+
       _ ->
         expected
     end

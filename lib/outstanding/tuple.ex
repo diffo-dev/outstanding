@@ -13,7 +13,8 @@ defoutstanding expected :: Tuple, actual :: Any do
             Enum.zip(Tuple.to_list(expected), Tuple.to_list(actual))
             |> Enum.filter(&Outstanding.outstanding(elem(&1, 0), elem(&1, 1)))
             |> Enum.unzip()
-          if (outstanding == []) do
+
+          if outstanding == [] do
             nil
           else
             expected
@@ -21,6 +22,7 @@ defoutstanding expected :: Tuple, actual :: Any do
         else
           expected
         end
+
       _ ->
         expected
     end
