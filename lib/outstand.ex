@@ -1320,12 +1320,12 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :less_than
-
-      to_timeout(actual) < to_timeout(expected) ->
-        nil
-
       true ->
-        :less_than
+        now = DateTime.utc_now()
+        case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
+          :lt -> nil
+          _ -> :less_than
+        end
     end
   end
 
@@ -1347,12 +1347,12 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :greater_than
-
-      to_timeout(actual) > to_timeout(expected) ->
-        nil
-
       true ->
-        :greater_than
+        now = DateTime.utc_now()
+        case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
+          :gt -> nil
+          _ -> :greater_than
+        end
     end
   end
 
@@ -1381,15 +1381,17 @@ defmodule Outstand do
         :error
 
       true ->
-        min = to_timeout(hd(expected))
-        max = to_timeout(hd(tl(expected)))
+        now = DateTime.utc_now()
+        min = DateTime.shift(now, hd(expected))
+        max = DateTime.shift(now, hd(tl(expected)))
+        shifted = DateTime.shift(now, actual)
 
         cond do
-          to_timeout(actual) >= min and to_timeout(actual) <= max ->
-            nil
+          DateTime.before?(shifted, min) or DateTime.after?(shifted, max) ->
+            :bounded_by
 
           true ->
-            :bounded_by
+            :nil
         end
     end
   end
@@ -1419,12 +1421,14 @@ defmodule Outstand do
         :error
 
       true ->
-        min = to_timeout(hd(expected))
-        max = to_timeout(hd(tl(expected)))
+        now = DateTime.utc_now()
+        min = DateTime.shift(now, hd(expected))
+        max = DateTime.shift(now, hd(tl(expected)))
+        shifted = DateTime.shift(now, actual)
 
         cond do
-          to_timeout(actual) < min or to_timeout(actual) > max ->
-            nil
+          DateTime.before?(shifted, min) or DateTime.after?(shifted, max) ->
+            :nil
 
           true ->
             :unbounded_by

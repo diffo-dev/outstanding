@@ -21,3 +21,4 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 ### Features
 * enhanced List implementation
+* fixed Duration and related expected functions not to use to_timeout

@@ -4,7 +4,8 @@ defoutstanding expected :: Duration, actual :: Any do
   if expected == nil or Outstand.type_of(actual) != Duration do
     expected
   else
-    if to_timeout(expected) == to_timeout(actual) do
+    now = DateTime.utc_now()
+    if DateTime.shift(now, expected) == DateTime.shift(now, actual) do
       nil
     else
       expected

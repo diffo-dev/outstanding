@@ -31,9 +31,7 @@ defmodule Outstanding.ExpectedFunctionArity2Test do
   gen_result_outstanding_test("less_than value result, equal", {&Outstand.less_than/2, %Duration{hour: 1}}, %Duration{hour: 1}, :less_than)
 
   gen_something_outstanding_test("greater_than value outstanding", {&Outstand.greater_than/2, %Duration{hour: 2}}, %Duration{hour: 1})
-
   gen_something_outstanding_test("greater_than value outstanding, equal", {&Outstand.greater_than/2, %Duration{hour: 2}}, %Duration{hour: 2})
-
   gen_nothing_outstanding_test("greater_than value realized", {&Outstand.greater_than/2, %Duration{hour: 2}}, %Duration{minute: 121})
 
   gen_result_outstanding_test(
