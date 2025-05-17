@@ -33,7 +33,7 @@ defmodule Outstanding.MixProject do
       name: @name,
       licenses: ["MIT"],
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*
-      CHANGELOG* documentation),
+      CHANGELOG*),
       links: %{
         "GitHub" => @github_url,
         "Author's home page" => "https://www.diffo.dev"
