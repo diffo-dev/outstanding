@@ -3,7 +3,7 @@ defmodule Outstanding.DateTest do
   use Outstand
 
   @now DateTime.utc_now() |> DateTime.to_naive()
-  @future DateTime.utc_now() |> DateTime.add(1, :day)|> DateTime.to_date()
+  @future DateTime.utc_now() |> DateTime.add(1, :day) |> DateTime.to_date()
   @past DateTime.utc_now() |> DateTime.add(-1, :day) |> DateTime.to_date()
 
   gen_something_outstanding_test("value outstanding, future", @now, @future)

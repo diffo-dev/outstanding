@@ -14,5 +14,5 @@ defmodule Outstanding.DurationTest do
   gen_nothing_outstanding_test("realized, equivalent", @minute, @sixty_seconds)
   gen_result_outstanding_test("value result, shorter", @minute, @second, @minute)
   gen_result_outstanding_test("value result, longer", @minute, @hour, @minute)
-  gen_result_outstanding_test("value result, nil",  @minute, nil, @minute)
+  gen_result_outstanding_test("value result, nil", @minute, nil, @minute)
 end

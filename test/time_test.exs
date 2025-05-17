@@ -3,7 +3,7 @@ defmodule Outstanding.TimeTest do
   use Outstand
 
   @now DateTime.utc_now() |> DateTime.to_time()
-  @future DateTime.utc_now() |> DateTime.add(1, :hour)|> DateTime.to_time()
+  @future DateTime.utc_now() |> DateTime.add(1, :hour) |> DateTime.to_time()
   @past DateTime.utc_now() |> DateTime.add(-1, :hour) |> DateTime.to_time()
 
   gen_something_outstanding_test("value outstanding, future", @now, @future)

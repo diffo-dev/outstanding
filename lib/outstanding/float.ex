@@ -7,12 +7,14 @@ defoutstanding expected :: Float, actual :: Any do
         ^expected -> nil
         _ -> expected
       end
+
     Integer ->
-      if (expected == actual) do
+      if expected == actual do
         nil
       else
         expected
       end
+
     _ ->
       expected
   end

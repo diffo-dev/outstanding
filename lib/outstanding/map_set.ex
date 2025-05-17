@@ -5,11 +5,13 @@ defoutstanding expected :: MapSet, actual :: Any do
     MapSet ->
       # difference filters on non-equal, not nil outstanding
       ms_difference = MapSet.difference(expected, actual)
+
       expected
       |> Enum.filter(&MapSet.member?(ms_difference, &1))
       |> MapSet.new()
       |> Outstand.suppress()
+
     _ ->
       expected
-    end
+  end
 end

@@ -7,12 +7,14 @@ defoutstanding expected :: Range, actual :: Any do
         ^expected -> nil
         _ -> expected
       end
+
     Integer ->
-      if (actual in expected) do
+      if actual in expected do
         nil
       else
         expected
       end
+
     _ ->
       expected
   end
