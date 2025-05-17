@@ -51,21 +51,39 @@ Outstanding(:thing, :other_thing) is :thing, since, since expected :thing is not
 Outstanding.outstanding(:thing, :other_thing)
 ```
 
+### Exceeds and Difference Operators
+
+For convenient use in expressions we've implemented operators.
+
+The 'exceeds' operator tells us whether our expectations exceed our actual. ```expected >>> actual``` is equivalent to ```Outstanding.outstanding?(expected, actual)```
+
+```elixir
+use Outstand
+:thing >>> :thing
+```
+
+The 'difference' operator tells us what expectations remain unmet. ```expected --- actual``` is equivalent to ```Outstanding.outstanding(expected, actual)```
+
+```elixir
+use Outstand
+:thing --- :other_thing
+```
+
 ## How to use Outstanding Protocol
 
-### Outstanding Map
+### Outstanding on Maps
 
-Outstanding is implemented for Map, which is where is gets more useful, as if actual is also a map, we call Outstanding value in the expected map, using the corresponding value if any from the actual map.
+Outstanding is implemented for Map, where values can be of any type, providing they implement Outstanding. This is where Outstanding protocol gets more useful, as if actual is also a map, we call Outstanding value in the expected map, using the corresponding value if any from the actual map.
 This allows actual to have additional keys/values and still potentially resolve expected, resulting in nil outstanding.
 
-We expect a mapped service to be active, however it is currently inactive.
+We expect a mapped service to be active/working, however it is currently inactive/idle.
 
 ```elixir
 Outstanding.outstanding(%{state: :active, status: :working}, 
   %{id: 1, state: :inactive, status: :idle})
 ```
 
-Try and resolve outstanding by setting actual ```state: active```
+Try and resolve outstanding by setting actual ```state: :active``` and ```status: :working```:
 
 <details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
   <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
@@ -100,6 +118,8 @@ Then start the actual service so that it has 'status: working'
   nil
   ```
 
+  What happens when expected and actual lists are different lengths? Try adding a third actual service after the other two. If the first two resolve then outstanding will be ```[nil, nil]``` indicating that our list expectation is unmet, however there is nothing outstanding with the first two elements.
+
   </div>
 </details>
 
@@ -123,12 +143,62 @@ What remains outstanding?
   </div>
 </details>
 
+## Outstanding on Lists
+
+Outstanding is implemented for Lists, where Lists contain elements implementing Outstanding.
+For an actual list to resolve the expected list, the lists must be the same length, and each expected element must be resolved by the corresponding actual element.
+
+We expect a list containing exactly two active/working child services, which are maps.
+
+```elixir
+Outstanding.outstanding([%{state: :active, status: :working}, %{state: :active, status: :working}],
+  [%{id: 1, state: :active, status: :idle}, %{id: 2, state: :suspended, status: :restricted}])
+```
+
+Try resolving the first child by setting its actual ```status: :working```:
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+  ```elixir
+  Outstanding.outstanding([%{state: :active, status: :working}, %{state: :active, status: :working}],   
+    [%{id: 1, state: :active, status: :idle}, %{id: 2, state: :suspended, status: :restricted}])
+  ```
+
+  Which should evaluate to
+  ```elixir
+  [nil, %{state: :active, status: :working}]
+  ```
+
+  </div>
+</details>
+
+Now resolve the second child by setting its actual ```state: :active``` and ```status: :working```:
+
+<details class="rounded-lg my-4" style="background-color: #96ef86; color: #040604;">
+  <summary class="cursor-pointer font-bold p-4"></i>Show Solution</summary>
+  <div class="p-4">
+
+  ```elixir
+  Outstanding.outstanding([%{state: :active, status: :working}, %{state: :active, status: :working}],   
+    [%{id: 1, state: :active, status: :working}, %{id: 2, state: :active, status: :working}])
+  ```
+
+  Which should evaluate to
+  ```elixir
+  nil
+  ```
+
+  </div>
+</details>
+
 ## How to implement Outstanding for your Types And Structs
 
 You can implement outstanding for any Type or Struct using the Outstand defoutstanding macro. 
 Expected is of whatever type you are implementing the protocol for, and actual must be of Any type.
 
-### Outstanding Types
+### Outstanding on any Type
 
 The following is the Outstanding implementation for Regex, which expects actual to match the (evaluated) regex. 
 We won't evaluate this as it is already defined.
@@ -168,7 +238,7 @@ These tests can be executed
 ExUnit.run()
 ```
 
-### Outstanding Structs
+### Outstanding on Structs
 
 When implementing Outstanding for a struct, you need to think about what fields you wish to run outstanding on, 
 what your expectation is for each field, and whether you require actual to have the same struct name, or even be a struct at all.
