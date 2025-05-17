@@ -78,9 +78,9 @@ Out of the box we have outstanding protocol implementations for the following ty
 
 Maps call outstanding on each element is expected, but allow extra elements in actual.
 
-Keyword Lists are Lists of Tuples but are handled like Maps.
+Keywords are Lists of Tuples but are handled like Maps.
 
-Lists (other than Keyword Lists) are strict in that they must be in order, so lists must have the same number of elements. Elements in the list have outstanding called on them. The entire list is returned when there is no match.
+Lists (other than Keywords) are strict in that they must be in order, so lists must have the same number of elements for outstanding to be nil. Outstanding is attempted on each pair of expected/actual elements, even when they have unequal number, in order to return a list of resolved (nil) or outstanding elements. If all expected elements are resolved however there are extra actual elements a list of nils is returned, of length expected.
 
 MapSets are not strict in that actual may contain additional elements, however MapSet.difference is used on the elements (which uses equals not outstanding).
 

@@ -1441,11 +1441,13 @@ defmodule Outstand do
   end
 
   @doc """
-  Suppress outstanding result when empty list, map, map set or tuple
+  Suppress outstanding result when list of nils, empty list, map, map set or tuple
 
   ## Examples
 
   ```
+  iex> Outstand.suppress([nil, nil])
+  nil
   iex> Outstand.suppress([])
   nil
   iex> Outstand.suppress([:a])
@@ -1464,11 +1466,20 @@ defmodule Outstand do
   {:a}
   ```
   """
-  def suppress(enum) when is_map(enum) or is_list(enum) do
-    if Enum.empty?(enum) do
+  def suppress(map) when is_map(map) do
+    if Enum.empty?(map) do
       nil
     else
-      enum
+      map
+    end
+  end
+
+  def suppress(list) when is_list(list) do
+    nils_removed = Enum.reject(list, &is_nil(&1))
+    if Enum.empty?(nils_removed) do
+      nil
+    else
+      list
     end
   end
 
