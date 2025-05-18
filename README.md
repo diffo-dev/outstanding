@@ -209,13 +209,22 @@ iex> Outstanding.outstanding(:no_value, "a")
 This requires some though as to what it means to 'resolve' your expected type with actual. 
 
 ## derive for Structs
-Outstanding implements the ```__deriving__/2``` callback so you can simply derive an Outstanding implementation when you define your struct. By default this performs outstanding on all fields, and requires the actual struct to be of the same type.
+Outstanding implements the ```__deriving__/3``` callback so you can simply derive an Outstanding implementation when you define your struct. By default this performs outstanding on all fields, and requires the actual struct to be of the same type.
 
 ```elixir
 defmodule ABC do
   @derive Outstanding
   defstruct [:a, :b, :c]
 end
+```
+
+You can also exclude fields with the ```except``` option
+
+```elixir
+  defmodule AB do
+    @derive {Outstanding, except: [:c]}
+    defstruct [:a, :b, :c]
+  end
 ```
 
 ## defoutstanding macro

@@ -19,7 +19,7 @@ defprotocol Outstanding do
   def outstanding?(expected, actual)
 
   @impl true
-  defmacro __deriving__(module, _options) do
+  defmacro __deriving__(module, options) do
     quote do
       defimpl Outstanding, for: unquote(module) do
         import Outstand, only: [map_to_struct: 2, outstanding?: 1]
@@ -34,12 +34,15 @@ defprotocol Outstanding do
             {%name{}, %name{}} ->
               expected
               |> Map.from_struct()
+              |> Map.drop(Keyword.get(unquote(options), :except, []))
               |> Outstanding.outstanding(Map.from_struct(actual))
               |> Outstand.map_to_struct(name)
 
-            {_, _} ->
-              # not an exact match so default to outstanding
+            {%name{}, _} ->
               expected
+              |> Map.from_struct()
+              |> Map.drop(Keyword.get(unquote(options), :except, []))
+              |> Outstand.map_to_struct(name)
           end
         end
         def outstanding?(expected, actual) do
