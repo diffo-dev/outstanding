@@ -1,7 +1,7 @@
 # Outstanding Elixir Protocol
 
 ```elixir
-Mix.install([{:outstanding, "~> 0.2.1"}], consolidate_protocols: false)
+Mix.install([{:outstanding, "~> 0.2.2"}], consolidate_protocols: false)
 ```
 
 ## Overview
@@ -195,10 +195,25 @@ Now resolve the second child by setting its actual ```state: :active``` and ```s
 
 ## How to implement Outstanding for your Types And Structs
 
-You can implement outstanding for any Type or Struct using the Outstand defoutstanding macro. 
-Expected is of whatever type you are implementing the protocol for, and actual must be of Any type.
+You can easily implement Outstandign on Structs and other Types
+
+### Derive Outstanding on your Structs
+
+When you define your struct you can simply @derive the Outstanding protocol. By default this expects all fields, and actual must be a struct of the same type.
+
+```elixir
+  defmodule ABC do
+    @derive Outstanding
+    defstruct [:a, :b, :c]
+  end
+
+  outstanding(%ABC{a: "apple", b: "banana", c: "carrot"}, %ABC{a: "apple", b: "bagel", c: "cake"})
+```
 
 ### Outstanding on any Type
+
+You can implement outstanding for any Type or Struct using the Outstand defoutstanding macro. 
+Expected is of whatever type you are implementing the protocol for, and actual must be of Any type.
 
 The following is the Outstanding implementation for Regex, which expects actual to match the (evaluated) regex. 
 We won't evaluate this as it is already defined.

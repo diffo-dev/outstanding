@@ -22,3 +22,8 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 ### Features
 * enhanced List implementation
 * fixed Duration and related expected functions not to use to_timeout
+
+## [v0.2.2](https://github.com/diffo-dev/outstanding/compare/v0.2.1...v0.2.2) (2025-05-19)
+
+### Features
+* deriving callback for Structs
