@@ -206,9 +206,30 @@ iex> Outstanding.outstanding(:no_value, "a")
 
 ## Implementing Outstanding for other types
 
-The defoutstanding macro can be used to implement outstanding on other types, including your own structs.
+This requires some though as to what it means to 'resolve' your expected type with actual. 
 
-This requires some though as to what it means to 'resolve' your expected struct with actual. The following XYZ struct uses Outstanding on the map to resolve :x, :y, :z, and also expects that actual is also an XYZ struct, although you may want to allow matching using straight maps or other struct with equivalent fields.
+## derive for Structs
+Outstanding implements the ```__deriving__/3``` callback so you can simply derive an Outstanding implementation when you define your struct. By default this performs outstanding on all fields, and requires the actual struct to be of the same type.
+
+```elixir
+defmodule ABC do
+  @derive Outstanding
+  defstruct [:a, :b, :c]
+end
+```
+
+You can also exclude fields with the ```except``` option
+
+```elixir
+  defmodule AB do
+    @derive {Outstanding, except: [:c]}
+    defstruct [:a, :b, :c]
+  end
+```
+
+## defoutstanding macro
+
+More flexibly, the defoutstanding macro can be used to implement outstanding on other types, including your own structs.
 
 ```elixir
 use Outstand

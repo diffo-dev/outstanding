@@ -2,7 +2,7 @@ defmodule Outstanding.MixProject do
   use Mix.Project
 
   @name :outstanding
-  @version "0.2.1"
+  @version "0.2.2"
   @description "Elixir protocol calculating outstanding from expected and actual"
   @github_url "https://github.com/diffo-dev/outstanding"
 
