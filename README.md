@@ -37,7 +37,7 @@ end
 
 To get started you need a running instance of [Livebook](https://livebook.dev/)
 
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://github.com/diffo-dev/outstanding/blob/dev/outstanding.livemd)
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fdiffo-dev%2Foutstanding%2Fblob%2Fdev%2Foutstanding.livemd)
 
 ## Outstanding?
 
