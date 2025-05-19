@@ -195,7 +195,7 @@ Now resolve the second child by setting its actual ```state: :active``` and ```s
 
 ## How to implement Outstanding for your Types And Structs
 
-You can easily implement Outstandign on Structs and other Types
+You can easily implement Outstanding on Structs and other Types
 
 ### Derive Outstanding on your Structs
 
@@ -206,8 +206,25 @@ When you define your struct you can simply @derive the Outstanding protocol. By 
     @derive Outstanding
     defstruct [:a, :b, :c]
   end
+```
 
-  outstanding(%ABC{a: "apple", b: "banana", c: "carrot"}, %ABC{a: "apple", b: "bagel", c: "cake"})
+Then we can evaluate outstanding on our new struct:
+
+```elixir
+  Outstanding.outstanding(%ABC{a: "apple", b: "banana", c: "carrot"}, %ABC{a: "apple", b: "bagel", c: "cake"})
+```
+
+We can also use the ```except``` option to exclude fields:
+
+```elixir
+  defmodule AB do
+    @derive {Outstanding, except: [:c]}
+    defstruct [:a, :b, :c]
+  end
+```
+
+```elixir
+  Outstanding.outstanding(%AB{a: "apple", b: "banana", c: "carrot"}, %AB{a: "apple", b: "bagel", c: "cake"})
 ```
 
 ### Outstanding on any Type
@@ -253,7 +270,7 @@ These tests can be executed
 ExUnit.run()
 ```
 
-### Outstanding on Structs
+### Outstanding on your Struct using defoutstanding
 
 When implementing Outstanding for a struct, you need to think about what fields you wish to run outstanding on, 
 what your expectation is for each field, and whether you require actual to have the same struct name, or even be a struct at all.
