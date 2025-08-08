@@ -18,11 +18,11 @@ defprotocol Outstanding do
   @spec outstanding?(t, any()) :: boolean()
   def outstanding?(expected, actual)
 
-  @impl true
   defmacro __deriving__(module, options) do
     quote do
       defimpl Outstanding, for: unquote(module) do
         import Outstand, only: [map_to_struct: 2, outstanding?: 1]
+
         def outstanding(expected, actual) do
           case {expected, actual} do
             {nil, nil} ->
@@ -45,6 +45,7 @@ defprotocol Outstanding do
               |> Outstand.map_to_struct(name)
           end
         end
+
         def outstanding?(expected, actual) do
           Outstand.outstanding?(outstanding(expected, actual))
         end

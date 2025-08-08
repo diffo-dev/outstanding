@@ -5,6 +5,7 @@ defoutstanding expected :: Duration, actual :: Any do
     expected
   else
     now = DateTime.utc_now()
+
     if DateTime.shift(now, expected) == DateTime.shift(now, actual) do
       nil
     else

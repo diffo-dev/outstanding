@@ -27,3 +27,12 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 ### Features
 * deriving callback for Structs
+
+## [v0.2.3](https://github.com/diffo-dev/outstanding/compare/v0.2.2...v0.2.3) (2025-08-08)
+
+### Features
+* enhanced map map implementation to allow structs to resolve
+
+## Fixes
+* fixed regex test failing with Elixir 1.18.4
+

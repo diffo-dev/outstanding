@@ -1320,8 +1320,10 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :less_than
+
       true ->
         now = DateTime.utc_now()
+
         case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
           :lt -> nil
           _ -> :less_than
@@ -1347,8 +1349,10 @@ defmodule Outstand do
     cond do
       actual == nil ->
         :greater_than
+
       true ->
         now = DateTime.utc_now()
+
         case DateTime.compare(DateTime.shift(now, actual), DateTime.shift(now, expected)) do
           :gt -> nil
           _ -> :greater_than
@@ -1391,7 +1395,7 @@ defmodule Outstand do
             :bounded_by
 
           true ->
-            :nil
+            nil
         end
     end
   end
@@ -1428,7 +1432,7 @@ defmodule Outstand do
 
         cond do
           DateTime.before?(shifted, min) or DateTime.after?(shifted, max) ->
-            :nil
+            nil
 
           true ->
             :unbounded_by
@@ -1532,6 +1536,38 @@ defmodule Outstand do
 
   def suppress(atom) when is_nil(atom) do
     nil
+  end
+
+  @doc """
+  Calculates outstanding on two maps
+
+  ## Examples
+
+  ```
+  iex> Outstand.outstanding_map(%{}, %{})
+  nil
+  iex> Outstand.outstanding_map(%{a: 1}, %{b: 2})
+  %{a: 1}
+  iex> Outstand.outstanding_map(%{a: 1}, %{a: 2})
+  %{a: 1}
+  iex> Outstand.outstanding_map(%{a: 1}, %{a: 1, b: 2})
+  nil
+  ```
+  """
+  def outstanding_map(expected, actual) when is_map(expected) and is_map(actual) do
+    expected
+    |> Enum.reduce(
+      %{},
+      fn {key, expected_value}, acc ->
+        if (not Map.has_key?(actual, key) and key == :no_value) or
+             Outstanding.outstanding(expected_value, actual[key]) != nil do
+          Map.put(acc, key, Outstanding.outstanding(expected_value, actual[key]))
+        else
+          acc
+        end
+      end
+    )
+    |> Outstand.suppress()
   end
 
   @doc """
