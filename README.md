@@ -69,14 +69,14 @@ Out of the box we have outstanding protocol implementations for the following ty
 | Keyword            | [a: :a]                    | handled by List     | (Keyword) List               | non_empty_keyword                                                     |
 | List               | [:a]                       |                     | List                         | any_list, empty_list, non_empty_list                                  |
 | MapSet             | MapSet.new([:a])           | uses difference     | MapSet                       | any_map_set, empty_map_set, non_empty_map_set                         |
-| Map                | {a: :b, c: :d}             | strict              | Map                          | any_map, empty_map, non_empty_map                                     |
+| Map                | {a: :b, c: :d}             | strict              | Map, any Struct              | any_map, empty_map, non_empty_map                                     |
 | NaiveDateTime      | ~N[2025-02-25 11:59:00]    |                     | NaiveDateTime                | any_naive_date_time, future_time, current_time, past_time             |
 | Range              | 1                          |                     | Range, Integer               | any_range                                                             |
 | Regex              | ~r/foo/                    | actual is argument  | String.Chars implementations | -                                                                     |
 | Time               | ~T[11:59:00.000]           |                     | Time                         | any_time, current_time, future_time, past_time                        |
 | Tuple              | {a: :b}                    | handled by Any      | Tuple                        | any_tuple                                                             |
 
-Maps call outstanding on each element is expected, but allow extra elements in actual.
+Maps call outstanding on each element is expected, but allow extra elements in actual. Maps can also be resolved by Structs.
 
 Keywords are Lists of Tuples but are handled like Maps.
 
