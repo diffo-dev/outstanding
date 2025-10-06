@@ -36,3 +36,8 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 ## Fixes
 * fixed regex test failing with Elixir 1.18.4
 
+## [v0.2.4](https://github.com/diffo-dev/outstanding/compare/v0.2.3...v0.2.4) (2025-10-06)
+
+## Fixes
+* fixed type warnings with Elixir 1.19.0-rc.1
+

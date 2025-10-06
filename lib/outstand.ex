@@ -1580,7 +1580,7 @@ defmodule Outstand do
   iex> Outstand.type_of(:a)
   Atom
   iex> Outstand.type_of(true)
-  Boolean
+  Atom
   iex> Outstand.type_of("a")
   BitString
   iex> Outstand.type_of(1.1)
@@ -1625,7 +1625,6 @@ defmodule Outstand do
 
       _ ->
         cond do
-          is_boolean(term) -> Boolean
           is_atom(term) -> Atom
           is_bitstring(term) -> BitString
           is_float(term) -> Float

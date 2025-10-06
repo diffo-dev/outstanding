@@ -25,9 +25,6 @@ defprotocol Outstanding do
 
         def outstanding(expected, actual) do
           case {expected, actual} do
-            {nil, nil} ->
-              nil
-
             {_, ^expected} ->
               nil
 
