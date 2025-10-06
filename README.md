@@ -57,9 +57,8 @@ Out of the box we have outstanding protocol implementations for the following ty
 
 | Elixir Type Module | Type Example               | Notes               | Resolving Types              | Related Expected Functions                                            |
 |--------------------|----------------------------|---------------------|------------------------------|-----------------------------------------------------------------------|
-| Atom               | :a                         | nil is an Atom      | Atom                         | any_atom, non_nil_atom                                                |
+| Atom               | :a                         | nil is an Atom      | Atom                         | any_atom, any_boolean, non_nil_atom,                                  |
 | BitString          | "a"                        |                     | BitString                    | any_bitstring                                                         |
-| Boolean            | true                       |                     | Boolean                      | any_boolean                                                           |
 | Date               | ~D[2025-02-25]             |                     | Date                         | any_date, current_date, future_date, past_date                        |
 | DateTime           | U[2025-02-25 11:59:00.00Z] |                     | DateTime                     | any_date_time, current_date_time, future_date_time, past_date_time    |
 | Duration           | %Duration{minute: 60}      |                     | Duration                     | any_duration                                                          |
@@ -91,6 +90,8 @@ Date, Time, DateTime and NaiveDateTime are supported, where Expected Function cu
 Function must be an outstanding function which takes a single argument actual, such as the expected functions.
 
 Regex can be any regex operating on the actual BitString, uses Regex.match?
+
+Booleans are of course just Atoms. 
 
 Of course you can easily implement the outstanding protocol for your own type (especially structs) using the defoutstanding macro.
 
