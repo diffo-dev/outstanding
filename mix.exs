@@ -72,7 +72,7 @@ defmodule Outstanding.MixProject do
       logo: "logos/diffo.jpg",
       extras: [
         "README.md": [title: "Guide"],
-        "LICENSE.md": [title: "License"]
+        "LICENSES/MIT.md": [title: "License"]
       ]
     ]
   end
