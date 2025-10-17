@@ -1,3 +1,9 @@
+<!-- 
+SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+
+SPDX-License-Identifier: MIT
+-->
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
@@ -40,4 +46,9 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 ## Fixes
 * fixed type warnings with Elixir 1.19.0-rc.1
+
+## [v0.2.5](https://github.com/diffo-dev/outstanding/compare/v0.2.4...v0.2.5) (2025-10-13)
+
+## Features
+* REUSE compliant
 

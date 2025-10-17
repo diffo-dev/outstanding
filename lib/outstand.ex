@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Outstand do
   @moduledoc """
   Provides utilities to implement and work with `Outstanding` types
