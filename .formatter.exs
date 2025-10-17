@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+#
+# SPDX-License-Identifier: MIT
+
 [
   inputs: [".formatter.exs", "mix.exs", "{config,lib,priv,rel,test}/**/*.{ex,exs}"],
   line_length: 140,

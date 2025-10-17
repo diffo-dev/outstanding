@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+#
+# SPDX-License-Identifier: MIT
+
 defprotocol Outstanding do
   @moduledoc """
   Protocol for comparing expected and actual, highlighting outstanding expectations unmet by actual

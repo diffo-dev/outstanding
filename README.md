@@ -1,6 +1,17 @@
+<!-- 
+SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+
+SPDX-License-Identifier: MIT
+-->
+
 # Outstanding
 
-Outstanding: something not yet dealt with.
+[![Module Version](https://img.shields.io/hexpm/v/outstanding)](https://hex.pm/packages/outstanding)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen)](https://hexdocs.pm/outstanding/)
+[![License](https://img.shields.io/hexpm/l/outstanding)](https://github.com/diffo-dev/outstanding/blob/master/LICENSES/MIT.md)
+[![REUSE status](https://api.reuse.software/badge/github.com/diffo-dev/outstanding)](https://api.reuse.software/info/github.com/diffo-dev/outstanding)
+
+Outstanding is an Elixir Protocol for determining unmet goals.
 
 The outstanding protocol is for those times when you want to know if any or which expectations have not been sufficiently met, and equality doesn't actually do it for you.
 

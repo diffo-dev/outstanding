@@ -1,8 +1,12 @@
+# SPDX-FileCopyrightText: 2025 outstanding contributors <https://github.com/diffo-dev/outstanding/graphs.contributors>
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Outstanding.MixProject do
   use Mix.Project
 
   @name :outstanding
-  @version "0.2.4"
+  @version "0.2.5"
   @description "Elixir protocol calculating outstanding from expected and actual"
   @github_url "https://github.com/diffo-dev/outstanding"
 
