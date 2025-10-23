@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen)](https://hexdocs.pm/outstanding/)
 [![License](https://img.shields.io/hexpm/l/outstanding)](https://github.com/diffo-dev/outstanding/blob/master/LICENSES/MIT.md)
 [![REUSE status](https://api.reuse.software/badge/github.com/diffo-dev/outstanding)](https://api.reuse.software/info/github.com/diffo-dev/outstanding)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/diffo-dev/outstanding)
 
 Outstanding is an Elixir Protocol for determining unmet goals.
 
